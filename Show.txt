@@ -1,0 +1,77 @@
+local module = {}
+
+pcall(function()
+    game:GetService("CoreGui"):FindFirstChild("FPS_Ping_Display"):Destroy()
+end)
+
+local CoreGui = game:GetService("CoreGui")
+local Stats = game:GetService("Stats")
+local RunService = game:GetService("RunService")
+
+local ui = Instance.new("ScreenGui")
+ui.Name = "FPS_Ping_Display"
+ui.IgnoreGuiInset = true
+ui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ui.ResetOnSpawn = false
+ui.Parent = CoreGui
+
+local fpsLabel = Instance.new("TextLabel")
+fpsLabel.Size = UDim2.new(0, 120, 0, 20)
+fpsLabel.Position = UDim2.new(1, -130, 0, 5)
+fpsLabel.BackgroundTransparency = 1
+fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+fpsLabel.TextStrokeTransparency = 0
+fpsLabel.TextSize = 16
+fpsLabel.Font = Enum.Font.Code
+fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
+fpsLabel.Text = "FPS: ..."
+fpsLabel.Parent = ui
+
+local pingLabel = fpsLabel:Clone()
+pingLabel.Position = UDim2.new(1, -130, 0, 25)
+pingLabel.Text = "Ping: ..."
+pingLabel.Parent = ui
+
+local showFPS = true
+local showPing = true
+
+function module.SetShowFPS(value)
+    showFPS = value
+    fpsLabel.Visible = value
+end
+
+function module.SetShowPing(value)
+    showPing = value
+    pingLabel.Visible = value
+end
+
+local fpsCounter, lastUpdate = 0, tick()
+
+RunService.RenderStepped:Connect(function()
+    fpsCounter += 1
+    if tick() - lastUpdate >= 1 then
+        if showFPS then
+            fpsLabel.Text = "FPS: " .. fpsCounter
+        end
+
+        if showPing then
+            local pingStat = Stats.Network.ServerStatsItem["Data Ping"]
+            local ping = pingStat and math.floor(pingStat:GetValue()) or 0
+
+            pingLabel.Text = "Ping: " .. ping .. " ms"
+
+            if ping <= 60 then
+                pingLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+            elseif ping <= 120 then
+                pingLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+            else
+                pingLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+            end
+        end
+
+        fpsCounter = 0
+        lastUpdate = tick()
+    end
+end)
+
+return module
