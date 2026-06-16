@@ -3740,7 +3740,8 @@ Scale=P(1)
 local ae={
 Title=ab[1]or ab.Name or ab.Title,
 SubTitle=ab[2]or ab.SubName or ab.SubTitle,
-ScriptFolder=ab[3]or ab.ScriptFolder or ab.FolderName
+ScriptFolder=ab[3]or ab.ScriptFolder or ab.FolderName,
+Background=ab.Background or ab.BackgroundImage -- Thêm dòng này để nhận link ảnh
 }
 
 assert(type(ae.Title)=="string",`"Window.Title". 'string' expected, got {typeof(ae.Title)}`)
@@ -3910,6 +3911,24 @@ Color="Colors.Background"
 }
 }
 })
+
+-- BẮT ĐẦU THÊM BACKGROUND IMAGE (Code mới)
+if ae.Background then
+    E("ImageLabel", "BackgroundImage", ak, {
+        Size = UDim2.fromScale(1, 1),
+        BackgroundTransparency = 1, -- Nền trong suốt để lộ ảnh
+        Image = ae.Background,
+        ScaleType = Enum.ScaleType.Crop, -- Zoom ảnh vừa khung, không bị méo
+        ZIndex = 0, -- Đẩy ảnh xuống lớp dưới cùng, không che mất các nút bấm
+        ThemeTag = {
+            ImageTransparency = "BackgroundTransparency" -- Tự động đồng bộ độ mờ với UI
+        },
+        Elements = {
+            Corner = UDim.new(0, 8) -- Bo viền ảnh khớp với viền UI
+        }
+    })
+end
+-- KẾT THÚC THÊM BACKGROUND IMAGE
 
 u(ak.Destroying,function()
 self:Destroy()
