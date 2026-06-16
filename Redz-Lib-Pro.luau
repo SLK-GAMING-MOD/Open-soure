@@ -3173,27 +3173,36 @@ end)
 
 -- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation)
 task.spawn(function()
+    -- 1. Setup UIScale ẩn ngay từ đầu
     local windowScale = Instance.new("UIScale")
     windowScale.Name = "WindowScale"
     windowScale.Scale = 0
     windowScale.Parent = ab
     
-    task.wait() -- Đợi 1 frame để GUI load xong kích thước thực tế (AbsoluteSize)
+    -- 2. Đợi GUI tính toán xong kích thước (Cách này nhanh và chính xác hơn task.wait)
+    if ab.AbsoluteSize.X == 0 then
+        ab:GetPropertyChangedSignal("AbsoluteSize"):Wait()
+    end
     
+    -- 3. Fix tâm (Chỉ làm 1 lần duy nhất)
     if not isInitialized then
         local currentPos = ab.Position
-        local xOffset = ab.AbsoluteSize.X / 2
-        local yOffset = ab.AbsoluteSize.Y / 2
+        local size = ab.AbsoluteSize
         
+        -- Tính toán khoảng bù (Offset) để GUI không bị nhảy khỏi vị trí cũ
+        local xOffset = size.X / 2
+        local yOffset = size.Y / 2
+        
+        -- Set AnchorPoint và Position cùng lúc
         ab.AnchorPoint = Vector2.new(0.5, 0.5)
         ab.Position = UDim2.new(
             currentPos.X.Scale, currentPos.X.Offset + xOffset,
             currentPos.Y.Scale, currentPos.Y.Offset + yOffset
         )
-        isInitialized = true -- Đánh dấu đã cấu hình xong tâm vị trí để không bị lỗi khi bấm Minimize sau này
+        isInitialized = true -- Đánh dấu đã xong, không bao giờ chạy lại đoạn này
     end
     
-    -- Thực hiện hiệu ứng phóng to từ tâm ra ngoài cực mượt
+    -- 4. Thực hiện hiệu ứng phóng to (Intro)
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
     tween:Play()
