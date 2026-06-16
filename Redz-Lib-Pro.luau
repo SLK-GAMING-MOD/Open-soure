@@ -4075,59 +4075,58 @@ Title="Cancel"
 }
 }
 
-u(aq.MouseEnter,function()aq.BackgroundTransparency=0.65 end)
-u(aq.MouseLeave,function()aq.BackgroundTransparency=1.00 end)
-
 local isMinimized = false
 local originalSize = nil
 local hiddenElements = {}
 
-u(ar.MouseEnter,function()ar.BackgroundTransparency=0.65 end)
-u(ar.MouseLeave,function()ar.BackgroundTransparency=1.00 end)
+-- Hiệu ứng Hover cho nút thu nhỏ (-)
+u(aq.MouseEnter,function()aq.BackgroundTransparency=0.65 end)
+u(aq.MouseLeave,function()aq.BackgroundTransparency=1.00 end)
 
--- Xử lý sự kiện thu nhỏ / phóng to đa nền tảng (PC & Mobile)
-u(ar.InputBegan, function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        local mainFrame = ad.Parent
-        isMinimized = not isMinimized
+-- Xử lý thu nhỏ / phóng to khi bấm nút aq (Hỗ trợ hoàn hảo cả PC & Mobile)
+u(aq.Activated, function()
+    isMinimized = not isMinimized
+    ak.ClipsDescendants = true -- Bật cái này để khi bóp nhỏ khung, các phần tử bên trong không bị tràn ra ngoài
+    
+    if isMinimized then
+        -- 1. Lưu lại kích thước ban đầu của MainFrame (ak)
+        originalSize = ak.Size
         
-        if isMinimized then
-            -- 1. Lưu lại kích thước chính xác trước khi thu nhỏ (để tránh bị lỗi khi người dùng đã kéo giãn UI)
-            originalSize = mainFrame.Size
-            
-            -- 2. Quét và ẩn tạm thời toàn bộ các phần tử con ngoại trừ thanh Topbar (an) để UI không bị tràn
-            hiddenElements = {}
-            for _, child in ipairs(mainFrame:GetChildren()) do
-                if child:IsA("GuiObject") and child ~= an then
-                    hiddenElements[child] = child.Visible
-                    child.Visible = false
-                end
+        -- 2. Ẩn tạm thời các phần tử con lọt ra ngoài (trừ thanh TopBar an)
+        hiddenElements = {}
+        for _, child in ipairs(ak:GetChildren()) do
+            if child:IsA("GuiObject") and child ~= an then
+                hiddenElements[child] = child.Visible
+                child.Visible = false
             end
-            
-            -- 3. Chạy hiệu ứng thu nhỏ mượt mà khung chính về bằng độ cao thanh Topbar
-            local topbarHeight = (an and an.Size.Y.Offset) or 35
-            j:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-                Size = UDim2.new(originalSize.X.Scale, originalSize.X.Offset, 0, topbarHeight)
-            }):Play()
-            
-        else
-            -- 1. Chạy hiệu ứng phóng to trở lại kích thước ban đầu của người dùng
-            if originalSize then
-                j:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-                    Size = originalSize
-                }):Play()
-            end
-            
-            -- 2. Khôi phục lại đúng trạng thái hiển thị (Visible) ban đầu của các phần tử con
-            for child, wasVisible in pairs(hiddenElements) do
-                if child and child.Parent then
-                    child.Visible = wasVisible
-                end
-            end
-            hiddenElements = {}
         end
+        
+        -- 3. Thu nhỏ chiều cao MainFrame về bằng chiều cao thanh TopBar
+        local topbarHeight = an and an.Size.Y.Offset or 35
+        j:Create(ak, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+            Size = UDim2.new(originalSize.X.Scale, originalSize.X.Offset, 0, topbarHeight)
+        }):Play()
+    else
+        -- 1. Phóng to MainFrame về lại kích thước cũ
+        if originalSize then
+            j:Create(ak, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Size = originalSize
+            }):Play()
+        end
+        
+        -- 2. Hiện lại các phần tử con về trạng thái hiển thị ban đầu
+        for child, wasVisible in pairs(hiddenElements) do
+            if child and child.Parent then
+                child.Visible = wasVisible
+            end
+        end
+        hiddenElements = {}
     end
 end)
+
+-- Hiệu ứng Hover cho nút đóng (X)
+u(ar.MouseEnter,function()ar.BackgroundTransparency=0.65 end)
+u(ar.MouseLeave,function()ar.BackgroundTransparency=1.00 end)
 
 as.SetUIScale=self.SetUIScale
 as.SUBTITLE_LABEL=ao.SubTitle
