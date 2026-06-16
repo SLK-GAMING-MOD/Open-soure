@@ -2879,7 +2879,7 @@ function ag:Minimize()
     windowScale.Name = "WindowScale"
     windowScale.Parent = ab
     
-    -- 1. Tính toán bù trừ (Fix lỗi AbsoluteSize = 0 khi GUI đang ẩn)
+    -- 1. Tính toán bù trừ (Fix lỗi AbsoluteSize = 0)
     local xOffset = ab.AbsoluteSize.X / 2
     local yOffset = ab.AbsoluteSize.Y / 2
     
@@ -2890,7 +2890,7 @@ function ag:Minimize()
     
     local currentPos = ab.Position
     
-    -- 2. Tạm thời đưa AnchorPoint về tâm (0.5, 0.5) phục vụ hiệu ứng phóng/thu
+    -- 2. Tạm thời đưa AnchorPoint về tâm (0.5, 0.5)
     ab.AnchorPoint = Vector2.new(0.5, 0.5)
     ab.Position = UDim2.new(
         currentPos.X.Scale, currentPos.X.Offset + xOffset,
@@ -2900,22 +2900,24 @@ function ag:Minimize()
     -- 3. Chạy Animation
     if ab.Visible then
         -- Thu nhỏ
+        task.wait() -- 🌟 Ép Roblox cập nhật tâm trước khi thu nhỏ
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
         local tween = j:Create(windowScale, tweenInfo, {Scale = 0})
         tween:Play()
-        tween.Completed:Wait() -- Đợi thu nhỏ xong
+        tween.Completed:Wait()
         ab.Visible = false
     else
         -- Phóng to
         windowScale.Scale = 0
         ab.Visible = true
+        task.wait() -- 🌟 FIX LỖI BAY TỪ GÓC TRÁI: Ép chốt vị trí tâm rồi mới phóng to
         local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
         local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
         tween:Play()
-        tween.Completed:Wait() -- Đợi phóng to xong
+        tween.Completed:Wait()
     end
     
-    -- 4. QUAN TRỌNG: Trả lại AnchorPoint về (0, 0) để KHÔNG BỊ LỖI Resize hay Kéo GUI
+    -- 4. Trả lại AnchorPoint về (0, 0)
     local endPos = ab.Position
     ab.AnchorPoint = Vector2.new(0, 0)
     ab.Position = UDim2.new(
@@ -3179,7 +3181,7 @@ end)
 ab.Visible = false
 
 task.spawn(function()
-    task.wait() -- Đợi nạp size
+    task.wait() -- Đợi nạp size ban đầu
     
     -- 2. Tạm thời dời tâm về 0.5 để làm hiệu ứng
     local currentPos = ab.Position
@@ -3187,9 +3189,8 @@ task.spawn(function()
     local yOffset = ab.AbsoluteSize.Y / 2
     
     if xOffset == 0 then
-        local parentSize = (ab.Parent and ab.Parent:IsA("GuiObject") and ab.Parent.AbsoluteSize) or workspace.CurrentCamera.ViewportSize
-        xOffset = ((ab.Size.X.Scale * parentSize.X) + ab.Size.X.Offset) / 2
-        yOffset = ((ab.Size.Y.Scale * parentSize.Y) + ab.Size.Y.Offset) / 2
+        xOffset = ab.Size.X.Offset / 2
+        yOffset = ab.Size.Y.Offset / 2
     end
     
     ab.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3203,14 +3204,19 @@ task.spawn(function()
     windowScale.Scale = 0
     windowScale.Parent = ab
     
-    -- 3. Bật GUI và chạy Tween
+    -- 3. Bật GUI lên
     ab.Visible = true
+    
+    -- 🌟 FIX LỖI BAY TỪ GÓC TRÁI: Dừng 1 frame để Engine chốt layout
+    task.wait() 
+    
+    -- Chạy Tween phóng to
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
     tween:Play()
     tween.Completed:Wait() -- PHẢI CHỜ HIỆU ỨNG XONG
     
-    -- 4. Trả lại tâm gốc (0, 0) ngay khi hiệu ứng kết thúc để fix triệt để lỗi Resize
+    -- 4. Trả lại tâm gốc (0, 0)
     local endPos = ab.Position
     ab.AnchorPoint = Vector2.new(0, 0)
     ab.Position = UDim2.new(
