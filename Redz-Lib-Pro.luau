@@ -2828,25 +2828,36 @@ BackgroundColor3="Colors.Buttons.Default"
 }
 })
 
-local startPos, startTime
-u(aw.InputBegan, function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        startPos = input.Position
-        startTime = tick()
-    end
-end)
+    local btnScale = E("UIScale", aw)
 
-u(aw.InputEnded, function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        if startPos then
-            local dist = (input.Position - startPos).Magnitude
-            -- Nếu kéo đi xa hơn 5 pixel thì chỉ là drag, không kích hoạt Minimize
-            if dist < 5 and (tick() - startTime) < 0.5 then
-                ag:Minimize()
+    local startPos, startTime
+    u(aw.InputBegan, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            startPos = input.Position
+            startTime = tick()
+            
+            -- [Hiệu ứng] Thu nhỏ nút và làm mờ nhẹ khi bắt đầu nhấn hoặc kéo
+            J(btnScale, "Scale", 0.85, 0.15):Play()
+            J(aw, "BackgroundTransparency", 0.3, 0.15):Play()
+        end
+    end)
+
+    u(aw.InputEnded, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            
+            -- [Hiệu ứng] Phóng to nảy lại như cũ và bỏ làm mờ khi nhả tay ra
+            J(btnScale, "Scale", 1, 0.25):Play()
+            J(aw, "BackgroundTransparency", 0, 0.25):Play()
+            
+            if startPos then
+                local dist = (input.Position - startPos).Magnitude
+                -- Nếu kéo đi xa hơn 5 pixel thì chỉ là drag, không kích hoạt Minimize
+                if dist < 5 and (tick() - startTime) < 0.5 then
+                    ag:Minimize()
+                end
             end
         end
-    end
-end)
+    end)
 
 av.Elements={}
 
