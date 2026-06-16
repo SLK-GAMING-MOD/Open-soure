@@ -2828,57 +2828,19 @@ BackgroundColor3="Colors.Buttons.Default"
 }
 })
 
--- Khởi tạo UIScale để tạo hiệu ứng khi nhấn/thả
-local btnScale = Instance.new("UIScale")
-btnScale.Name = "ButtonScale"
-btnScale.Parent = aw
-local TS = game:GetService("TweenService")
-
--- Khởi tạo tính năng Bo góc (Corner) tự động nếu có truyền vào av
-if av.Corner then
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = typeof(av.Corner) == "UDim" and av.Corner or UDim.new(0, 8)
-    corner.Parent = aw
-    av.Corner = nil -- Xóa để không bị xung đột khi D.SetProperties chạy
-end
-
--- Khởi tạo tính năng Viền (Stroke) tự động nếu cấu hình truyền vào av
-if av.StrokeThickness or av.StrokeColor or av.Stroke then
-    local stroke = Instance.new("UIStroke")
-    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    
-    if type(av.Stroke) == "table" then
-        stroke.Color = av.Stroke.Color or Color3.fromRGB(255, 255, 255)
-        stroke.Thickness = av.Stroke.Thickness or 2
-    else
-        stroke.Color = av.StrokeColor or Color3.fromRGB(255, 255, 255)
-        stroke.Thickness = av.StrokeThickness or 2
-    end
-    
-    stroke.Parent = aw
-    av.Stroke = nil
-    av.StrokeColor = nil
-    av.StrokeThickness = nil
-end
-
 local startPos, startTime
 u(aw.InputBegan, function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         startPos = input.Position
         startTime = tick()
-        -- Hiệu ứng co giãn: mượt mà thu nhỏ nhẹ khi đè nhấn xuống tạo cảm giác vật lý
-        TS:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = 0.85}):Play()
     end
 end)
 
 u(aw.InputEnded, function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        -- Trả lại kích thước chuẩn ban đầu khi nhả tay ra
-        TS:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = 1.0}):Play()
-        
         if startPos then
             local dist = (input.Position - startPos).Magnitude
-            -- Nếu kéo đi xa hơn 5 pixel thì chỉ tính là Drag, không kích hoạt Minimize ẩn/hiện GUI
+            -- Nếu kéo đi xa hơn 5 pixel thì chỉ là drag, không kích hoạt Minimize
             if dist < 5 and (tick() - startTime) < 0.5 then
                 ag:Minimize()
             end
@@ -2886,23 +2848,32 @@ u(aw.InputEnded, function(input)
     end
 end)
 
+av.Elements={}
+
+if av.Corner then
+    av.Elements.Corner=av.Corner
+    av.Corner=nil
+end
+
+-- Tích hợp bo viền (UIStroke)
+if av.StrokeColor or av.StrokeThickness then
+    av.Elements.Stroke = {
+        Color = av.StrokeColor or Color3.fromRGB(255, 255, 255), -- Đổi màu mặc định ở đây nếu muốn
+        Thickness = av.StrokeThickness or 1.5,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- Ép viền bám sát theo khung (Corner)
+    }
+    -- Xóa đi để hàm SetProperties không bị lỗi khi set vào ImageButton
+    av.StrokeColor=nil
+    av.StrokeThickness=nil
+elseif av.Stroke then
+    av.Elements.Stroke=av.Stroke
+    av.Stroke=nil
+end
+
 D.Draggable(aw,ad,0.5)
 D.SetProperties(aw,av)
 
 return aw
-end
-
-function aj:SetKeyCode(av)
-assert(au(av),`"Minimizer.SetKeyCode[param 1]". 'KeyCode' expected, got {typeof(av)}`)
-
-self.KeyCode=av
-end
-
-function ag:SelectTab(av)
-local aw=type(av)=="number"and S[av]
-
-if type(av)=="table"and av.IS_A_TAB then
-aw=av
 end
 
 function aj:SetKeyCode(av)
