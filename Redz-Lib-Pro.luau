@@ -100,13 +100,15 @@ end
 
 local s={
 Information={
-Version="v1.3.47",
+Version="v1.2.13",
 GitHubOwner="72ms"
 },
 Default={
-Theme="Darker",
-UISize=UDim2.fromOffset(550,380),
-TabSize=160
+    Theme="Darker",
+    UISize=UDim2.fromOffset(550, 380),
+    TabSize=160,
+    Position = UDim2.fromScale(0.5, 0.5),
+    AnchorPoint = Vector2.new(0.5, 0.5)
 },
 
 Themes=r,
@@ -2869,57 +2871,8 @@ self.SelectedTab=av
 end
 end
 
-local isAnimating = false
-local isInitialized = false -- Thêm biến này để khóa việc chỉnh vị trí
-
 function ag:Minimize()
-    if isAnimating then return end
-    isAnimating = true
-    
-    -- 1. Tạo UIScale
-    local windowScale = ab:FindFirstChild("WindowScale")
-    if not windowScale then
-        windowScale = Instance.new("UIScale")
-        windowScale.Name = "WindowScale"
-        windowScale.Parent = ab
-        windowScale.Scale = 1
-    end
-    
-    -- 2. Chỉ chỉnh AnchorPoint và bù trừ Position 1 lần duy nhất lúc bắt đầu
-    if not isInitialized then
-        -- Lưu vị trí cũ
-        local currentPos = ab.Position
-        -- Tính toán bù trừ để GUI không bị nhảy
-        local xOffset = ab.AbsoluteSize.X / 2
-        local yOffset = ab.AbsoluteSize.Y / 2
-        
-        ab.AnchorPoint = Vector2.new(0.5, 0.5)
-        ab.Position = UDim2.new(
-            currentPos.X.Scale, currentPos.X.Offset + xOffset,
-            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
-        )
-        isInitialized = true -- Đánh dấu đã xong
-    end
-    
-    -- 3. Logic Animation
-    if ab.Visible then
-        -- Thu nhỏ
-        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        local tween = j:Create(windowScale, tweenInfo, {Scale = 0})
-        tween:Play()
-        tween.Completed:Wait()
-        ab.Visible = false
-    else
-        -- Phóng to
-        windowScale.Scale = 0
-        ab.Visible = true
-        local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
-        tween:Play()
-        tween.Completed:Wait()
-    end
-    
-    isAnimating = false
+ab.Visible=not ab.Visible
 end
 
 function ag:MakeTab(av)
@@ -3169,54 +3122,6 @@ u(aa.Activated,function()
 if Z~=nil and not Z.Closing and not Z.Closed then
 Z:Close()
 end
-end)
-
--- 1. Giấu GUI ngay lập tức
-ab.Visible = false
-
-task.spawn(function()
-    task.wait() -- Đợi nạp size ban đầu
-    
-    -- 2. Tạm thời dời tâm về 0.5 để làm hiệu ứng
-    local currentPos = ab.Position
-    local xOffset = ab.AbsoluteSize.X / 2
-    local yOffset = ab.AbsoluteSize.Y / 2
-    
-    if xOffset == 0 then
-        xOffset = ab.Size.X.Offset / 2
-        yOffset = ab.Size.Y.Offset / 2
-    end
-    
-    ab.AnchorPoint = Vector2.new(0.5, 0.5)
-    ab.Position = UDim2.new(
-        currentPos.X.Scale, currentPos.X.Offset + xOffset,
-        currentPos.Y.Scale, currentPos.Y.Offset + yOffset
-    )
-    
-    local windowScale = ab:FindFirstChild("WindowScale") or Instance.new("UIScale")
-    windowScale.Name = "WindowScale"
-    windowScale.Scale = 0
-    windowScale.Parent = ab
-    
-    -- 3. Bật GUI lên
-    ab.Visible = true
-    
-    -- 🌟 FIX LỖI BAY TỪ GÓC TRÁI: Dừng 1 frame để Engine chốt layout
-    task.wait() 
-    
-    -- Chạy Tween phóng to
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
-    tween:Play()
-    tween.Completed:Wait() -- PHẢI CHỜ HIỆU ỨNG XONG
-    
-    -- 4. Trả lại tâm gốc (0, 0)
-    local endPos = ab.Position
-    ab.AnchorPoint = Vector2.new(0, 0)
-    ab.Position = UDim2.new(
-        endPos.X.Scale, endPos.X.Offset - xOffset,
-        endPos.Y.Scale, endPos.Y.Offset - yOffset
-    )
 end)
 
 ag.StartWindow=nil
@@ -3635,7 +3540,6 @@ ClipsDescendants=true
 
 return af,ag end
 
-
 function s:GetIconByName(ab)
 if ab==nil then return end
 assert(ab,`"Library.GetIconByName". 'string' expected, got {typeof(ab)}`)
@@ -3657,7 +3561,6 @@ return O(ae) and ae or "rbxassetid://"..ae
 end
 end
 end
-
 
 function s:IsValidTheme(ab)
 assert(type(ab)=="string",`"Library.IsValidTheme". string extected, got {typeof(ab)}`)
@@ -3855,7 +3758,7 @@ if ai and type(aj)=="table"then
 return aj
 end
 
-local ak="" -- Không còn dùng để nối chuỗi nữa nên để trống
+local ak=""
 local al="https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/lucide/dist/Icons.lua"
 local am local an=function()
 
@@ -3901,12 +3804,13 @@ end
 end
 
 local ak=E("Frame","Window",I,{
-Position=UDim2.new(0.5,-ah.X.Offset/2,0.5,-ah.Y.Offset/2),
-Active=true,
-Size=ah,
-ThemeTag={
-BackgroundTransparency="BackgroundTransparency"
-},
+    AnchorPoint=Vector2.new(0.5, 0.5),
+    Position=UDim2.fromScale(0.5, 0.5),
+    Active=true,
+    Size=ah,
+    ThemeTag={
+        BackgroundTransparency="BackgroundTransparency"
+    },
 Elements={
 Corner=UDim.new(0,8),
 Gradient={
@@ -4048,9 +3952,9 @@ Corner=UDim.new(0,6)
 ThemeTag={
 BackgroundColor3="Colors.OnPrimary"
 }
-})
+})local ay=function(
 
-local ay=function(ay)
+ay)
 local az=ay:GetAttribute"Resizing"
 ay:SetAttribute("Resizing",tick())
 
@@ -4066,37 +3970,16 @@ J(ay,"BackgroundTransparency",1,0.4):Play()end
 u(aw:GetPropertyChangedSignal"Position",function()
 ay(aw)
 local az=aw.Position
-if ak.Size ~= az then
-    ak.Size=az
-end
+ak.Size=az
 af.UISize={az.X.Offset,az.Y.Offset}
 end)
 
 u(ax:GetPropertyChangedSignal"Position",function()
 ay(ax)
 local az=ax.Position
-local aZ_TabsSize = UDim2.new(0,az.X.Offset,1,-an.Size.Y.Offset)
-if at.Size ~= aZ_TabsSize then
-    at.Size=aZ_TabsSize
-    au.Size=UDim2.new(1,-az.X.Offset,1,-an.Size.Y.Offset)
-end
+at.Size=UDim2.new(0,az.X.Offset,1,-an.Size.Y.Offset)
+au.Size=UDim2.new(1,-at.Size.X.Offset,1,-an.Size.Y.Offset)
 af.TabSize=az.X.Offset
-end)
-
--- [Tính năng mới]: Tự động cập nhật vị trí nút kéo và TỰ ĐỘNG LƯU FILE khi Size của Window thay đổi từ script ngoài (Không cần reload)
-u(ak:GetPropertyChangedSignal"Size", function()
-    if aw.Position ~= ak.Size then
-        aw.Position = ak.Size
-    end
-    af.UISize = {ak.Size.X.Offset, ak.Size.Y.Offset}
-end)
-
--- [Tính năng mới]: Tự động cập nhật vị trí thanh kéo khi Size của Tabs thay đổi từ script ngoài (Không cần reload)
-u(at:GetPropertyChangedSignal"Size", function()
-    local targetPos = UDim2.new(0, at.Size.X.Offset, 0.5, 15)
-    if ax.Position ~= targetPos then
-        ax.Position = targetPos
-    end
 end)
 
 D.Draggable(aw,ad,0.68,function(az,aA,aB,aC)
@@ -4106,11 +3989,6 @@ end)
 D.Draggable(ax,ad,0.68,function(aA,aB)
 return UDim2.new(0,math.clamp(aB,135,210),0.5,15)
 end)
-
--- [MẸO QUAN TRỌNG]: Xuất MainFrame trực tiếp ra biến as (Window) để Script bên ngoài sử dụng đổi size siêu mượt
-if as and type(as) == "table" then
-    as.MainFrame = ak
-end
 
 local aA={
 Title="Close Window?",
