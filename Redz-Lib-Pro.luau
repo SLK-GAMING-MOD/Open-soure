@@ -2870,44 +2870,33 @@ end
 end
 
 local isAnimating = false
-local isInitialized = false -- Thêm biến này để khóa việc chỉnh vị trí
 
 function ag:Minimize()
     if isAnimating then return end
     isAnimating = true
     
-    -- 1. Tạo UIScale
-    local windowScale = ab:FindFirstChild("WindowScale")
-    if not windowScale then
-        windowScale = Instance.new("UIScale")
-        windowScale.Name = "WindowScale"
-        windowScale.Parent = ab
-        windowScale.Scale = 1
-    end
+    local windowScale = ab:FindFirstChild("WindowScale") or Instance.new("UIScale")
+    windowScale.Name = "WindowScale"
+    windowScale.Parent = ab
     
-    -- 2. Chỉ chỉnh AnchorPoint và bù trừ Position 1 lần duy nhất lúc bắt đầu
-    if not isInitialized then
-        -- Lưu vị trí cũ
-        local currentPos = ab.Position
-        -- Tính toán bù trừ để GUI không bị nhảy
-        local xOffset = ab.AbsoluteSize.X / 2
-        local yOffset = ab.AbsoluteSize.Y / 2
-        
-        ab.AnchorPoint = Vector2.new(0.5, 0.5)
-        ab.Position = UDim2.new(
-            currentPos.X.Scale, currentPos.X.Offset + xOffset,
-            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
-        )
-        isInitialized = true -- Đánh dấu đã xong
-    end
+    -- 1. Tính bù trừ để đưa AnchorPoint về tâm (0.5, 0.5) phục vụ hiệu ứng phóng/thu
+    local currentPos = ab.Position
+    local xOffset = ab.AbsoluteSize.X / 2
+    local yOffset = ab.AbsoluteSize.Y / 2
     
-    -- 3. Logic Animation
+    ab.AnchorPoint = Vector2.new(0.5, 0.5)
+    ab.Position = UDim2.new(
+        currentPos.X.Scale, currentPos.X.Offset + xOffset,
+        currentPos.Y.Scale, currentPos.Y.Offset + yOffset
+    )
+    
+    -- 2. Chạy Animation
     if ab.Visible then
         -- Thu nhỏ
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
         local tween = j:Create(windowScale, tweenInfo, {Scale = 0})
         tween:Play()
-        tween.Completed:Wait()
+        tween.Completed:Wait() -- Đợi thu nhỏ xong
         ab.Visible = false
     else
         -- Phóng to
@@ -2916,8 +2905,16 @@ function ag:Minimize()
         local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
         local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
         tween:Play()
-        tween.Completed:Wait()
+        tween.Completed:Wait() -- Đợi phóng to xong
     end
+    
+    -- 3. QUAN TRỌNG: Trả lại AnchorPoint về (0, 0) để KHÔNG BỊ LỖI Resize hay Kéo GUI
+    local endPos = ab.Position
+    ab.AnchorPoint = Vector2.new(0, 0)
+    ab.Position = UDim2.new(
+        endPos.X.Scale, endPos.X.Offset - xOffset,
+        endPos.Y.Scale, endPos.Y.Offset - yOffset
+    )
     
     isAnimating = false
 end
@@ -3171,47 +3168,48 @@ Z:Close()
 end
 end)
 
--- 1. Giấu GUI ngay lập tức để không bị lộ hình dáng cũ trước khi làm hiệu ứng (Chống nháy hình)
+-- 1. Giấu GUI ngay lập tức
 ab.Visible = false
 
--- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation) dựa theo logic của bro
 task.spawn(function()
-    -- 2. Đợi 1 frame để thư viện nạp xong xuôi Size/Position gốc và hệ thống tính xong kích thước thực tế
-    task.wait()
+    task.wait() -- Đợi nạp size
     
-    -- 3. Cấu hình AnchorPoint và bù trừ vị trí chuẩn 1 lần duy nhất giống logic Minimize của bro
-    if not isInitialized then
-        local currentPos = ab.Position
-        local xOffset = ab.AbsoluteSize.X / 2
-        local yOffset = ab.AbsoluteSize.Y / 2
-        
-        -- Phương án dự phòng cực hạn: Nếu AbsoluteSize vẫn chưa kịp load (bằng 0), tự động tính bằng Size tĩnh để CHỐNG văng lên góc trái
-        if xOffset == 0 then
-            local parentSize = (ab.Parent and ab.Parent:IsA("GuiObject") and ab.Parent.AbsoluteSize) or workspace.CurrentCamera.ViewportSize
-            xOffset = ((ab.Size.X.Scale * parentSize.X) + ab.Size.X.Offset) / 2
-            yOffset = ((ab.Size.Y.Scale * parentSize.Y) + ab.Size.Y.Offset) / 2
-        end
-        
-        ab.AnchorPoint = Vector2.new(0.5, 0.5)
-        ab.Position = UDim2.new(
-            currentPos.X.Scale, currentPos.X.Offset + xOffset,
-            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
-        )
-        isInitialized = true -- Khóa lại để hàm Minimize sau này sử dụng chung, không bị lệch vị trí nữa
+    -- 2. Tạm thời dời tâm về 0.5 để làm hiệu ứng
+    local currentPos = ab.Position
+    local xOffset = ab.AbsoluteSize.X / 2
+    local yOffset = ab.AbsoluteSize.Y / 2
+    
+    if xOffset == 0 then
+        local parentSize = (ab.Parent and ab.Parent:IsA("GuiObject") and ab.Parent.AbsoluteSize) or workspace.CurrentCamera.ViewportSize
+        xOffset = ((ab.Size.X.Scale * parentSize.X) + ab.Size.X.Offset) / 2
+        yOffset = ((ab.Size.Y.Scale * parentSize.Y) + ab.Size.Y.Offset) / 2
     end
     
-    -- 4. Tạo UIScale và đặt kích thước về 0 để chuẩn bị phóng to
+    ab.AnchorPoint = Vector2.new(0.5, 0.5)
+    ab.Position = UDim2.new(
+        currentPos.X.Scale, currentPos.X.Offset + xOffset,
+        currentPos.Y.Scale, currentPos.Y.Offset + yOffset
+    )
+    
     local windowScale = ab:FindFirstChild("WindowScale") or Instance.new("UIScale")
     windowScale.Name = "WindowScale"
     windowScale.Scale = 0
     windowScale.Parent = ab
     
-    -- 5. Hiện GUI lại và chạy hiệu ứng bung ra từ tâm cực mượt
+    -- 3. Bật GUI và chạy Tween
     ab.Visible = true
-    
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
     tween:Play()
+    tween.Completed:Wait() -- PHẢI CHỜ HIỆU ỨNG XONG
+    
+    -- 4. Trả lại tâm gốc (0, 0) ngay khi hiệu ứng kết thúc để fix triệt để lỗi Resize
+    local endPos = ab.Position
+    ab.AnchorPoint = Vector2.new(0, 0)
+    ab.Position = UDim2.new(
+        endPos.X.Scale, endPos.X.Offset - xOffset,
+        endPos.Y.Scale, endPos.Y.Offset - yOffset
+    )
 end)
 
 ag.StartWindow=nil
