@@ -2869,9 +2869,37 @@ self.SelectedTab=av
 end
 end
 
+local isAnimating = false
 function ag:Minimize()
-ab.Visible=not ab.Visible
+    if isAnimating then return end
+    isAnimating = true
+    
+    -- Tự động tạo UIScale bên trong MainFrame nếu chưa có
+    local windowScale = ab:FindFirstChild("WindowScale")
+    if not windowScale then
+        windowScale = Instance.new("UIScale")
+        windowScale.Name = "WindowScale"
+        windowScale.Parent = ab
+    end
+    
+    if ab.Visible then
+        -- Hiệu ứng thu nhỏ khi tắt (Scale về 0)
+        local tween = J(windowScale, "Scale", 0, 0.25)
+        tween:Play()
+        tween.Completed:Wait()
+        ab.Visible = false
+    else
+        -- Hiệu ứng phóng to khi mở (Scale từ 0 lên 1)
+        windowScale.Scale = 0
+        ab.Visible = true
+        local tween = J(windowScale, "Scale", 1, 0.25)
+        tween:Play()
+        tween.Completed:Wait()
+    end
+    
+    isAnimating = false
 end
+
 
 function ag:MakeTab(av)
 local aw=av[1]or av.Name or av.Title
