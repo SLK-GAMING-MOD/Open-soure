@@ -2879,18 +2879,25 @@ function ag:Minimize()
     windowScale.Name = "WindowScale"
     windowScale.Parent = ab
     
-    -- 1. Tính bù trừ để đưa AnchorPoint về tâm (0.5, 0.5) phục vụ hiệu ứng phóng/thu
-    local currentPos = ab.Position
+    -- 1. Tính toán bù trừ (Fix lỗi AbsoluteSize = 0 khi GUI đang ẩn)
     local xOffset = ab.AbsoluteSize.X / 2
     local yOffset = ab.AbsoluteSize.Y / 2
     
+    if xOffset == 0 or yOffset == 0 then
+        xOffset = ab.Size.X.Offset / 2
+        yOffset = ab.Size.Y.Offset / 2
+    end
+    
+    local currentPos = ab.Position
+    
+    -- 2. Tạm thời đưa AnchorPoint về tâm (0.5, 0.5) phục vụ hiệu ứng phóng/thu
     ab.AnchorPoint = Vector2.new(0.5, 0.5)
     ab.Position = UDim2.new(
         currentPos.X.Scale, currentPos.X.Offset + xOffset,
         currentPos.Y.Scale, currentPos.Y.Offset + yOffset
     )
     
-    -- 2. Chạy Animation
+    -- 3. Chạy Animation
     if ab.Visible then
         -- Thu nhỏ
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
@@ -2908,7 +2915,7 @@ function ag:Minimize()
         tween.Completed:Wait() -- Đợi phóng to xong
     end
     
-    -- 3. QUAN TRỌNG: Trả lại AnchorPoint về (0, 0) để KHÔNG BỊ LỖI Resize hay Kéo GUI
+    -- 4. QUAN TRỌNG: Trả lại AnchorPoint về (0, 0) để KHÔNG BỊ LỖI Resize hay Kéo GUI
     local endPos = ab.Position
     ab.AnchorPoint = Vector2.new(0, 0)
     ab.Position = UDim2.new(
