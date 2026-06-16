@@ -2872,47 +2872,7 @@ end
 end
 
 function ag:Minimize()
-    local mainScale = ak:FindFirstChild("MainScale")
-    if not mainScale then
-        mainScale = Instance.new("UIScale")
-        mainScale.Name = "MainScale"
-        mainScale.Parent = ak
-    end
-
-    -- Khởi tạo trạng thái ẩn/hiện thực tế ban đầu nếu chưa có
-    if self.UiVisibleState == nil then
-        self.UiVisibleState = ak.Visible
-    end
-
-    -- Đảo ngược trạng thái mong muốn ngay lập tức khi bấm nút
-    self.UiVisibleState = not self.UiVisibleState
-
-    -- Hủy hiệu ứng cũ nếu đang chạy dở để tránh xung đột chèn ép animation
-    if self.CurrentMinimizeTween then
-        self.CurrentMinimizeTween:Cancel()
-        self.CurrentMinimizeTween = nil
-    end
-
-    if self.UiVisibleState then
-        -- PHÓNG TO NẢY RA NGOÀI (HIỆN UI)
-        ak.Visible = true
-        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        self.CurrentMinimizeTween = j:Create(mainScale, tweenInfo, {Scale = 1})
-        self.CurrentMinimizeTween:Play()
-    else
-        -- THU NHỎ NẢY VÀO TRONG (ẨN UI)
-        local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        self.CurrentMinimizeTween = j:Create(mainScale, tweenInfo, {Scale = 0})
-        
-        self.CurrentMinimizeTween.Completed:Connect(function(playbackState)
-            -- Chỉ ẩn thuộc tính Visible khi hiệu ứng kết thúc hoàn toàn và người dùng vẫn thực sự muốn ẩn
-            if playbackState == Enum.PlaybackState.Completed and not self.UiVisibleState then
-                ak.Visible = false
-            end
-        end)
-        
-        self.CurrentMinimizeTween:Play()
-    end
+ab.Visible=not ab.Visible
 end
 
 function ag:MakeTab(av)
