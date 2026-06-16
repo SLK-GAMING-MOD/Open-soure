@@ -2874,7 +2874,7 @@ function ag:Minimize()
     if isAnimating then return end
     isAnimating = true
     
-    -- Tự động tạo UIScale bên trong MainFrame nếu chưa có
+    -- Tạo UIScale để xử lý thu phóng vào tâm
     local windowScale = ab:FindFirstChild("WindowScale")
     if not windowScale then
         windowScale = Instance.new("UIScale")
@@ -2883,22 +2883,25 @@ function ag:Minimize()
     end
     
     if ab.Visible then
-        -- Hiệu ứng thu nhỏ khi tắt (Scale về 0)
-        local tween = J(windowScale, "Scale", 0, 0.25)
+        -- Hiệu ứng thu nhỏ nảy vào giữa (Zoom out với Easing In Back)
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        local tween = j:Create(windowScale, tweenInfo, {Scale = 0})
         tween:Play()
         tween.Completed:Wait()
         ab.Visible = false
     else
-        -- Hiệu ứng phóng to khi mở (Scale từ 0 lên 1)
+        -- Hiệu ứng phóng to nảy ra (Bouncy Zoom in với Easing Out Back)
         windowScale.Scale = 0
         ab.Visible = true
-        local tween = J(windowScale, "Scale", 1, 0.25)
+        local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
         tween:Play()
         tween.Completed:Wait()
     end
     
     isAnimating = false
 end
+
 
 
 function ag:MakeTab(av)
