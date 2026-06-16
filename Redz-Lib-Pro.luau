@@ -2871,8 +2871,39 @@ self.SelectedTab=av
 end
 end
 
+local isMinimizing = false
 function ag:Minimize()
-ab.Visible=not ab.Visible
+    -- Tránh việc user spam nút bấm lỗi hiệu ứng
+    if isMinimizing then return end
+    isMinimizing = true
+
+    -- Lấy MainScale đã được tạo lúc khởi động hoặc tạo mới nếu chưa có
+    local mainScale = ab:FindFirstChild("MainScale")
+    if not mainScale then
+        mainScale = Instance.new("UIScale")
+        mainScale.Name = "MainScale"
+        mainScale.Parent = ab
+        mainScale.Scale = ab.Visible and 1 or 0
+    end
+
+    if ab.Visible then
+        -- Hiệu ứng thu nhỏ (ẩn đi) với EasingStyle Back nảy thụt lùi
+        local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        local tween = j:Create(mainScale, tweenInfo, {Scale = 0})
+        tween:Play()
+        tween.Completed:Wait() -- Đợi tween chạy xong mới tắt hiển thị
+        ab.Visible = false
+    else
+        -- Bật hiển thị trước ở mức Scale 0, sau đó phóng to (hiện lên) nảy ra
+        ab.Visible = true
+        mainScale.Scale = 0
+        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        local tween = j:Create(mainScale, tweenInfo, {Scale = 1})
+        tween:Play()
+        tween.Completed:Wait()
+    end
+    
+    isMinimizing = false
 end
 
 function ag:MakeTab(av)
