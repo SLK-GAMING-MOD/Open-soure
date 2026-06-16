@@ -2872,26 +2872,28 @@ end
 end
 
 function ag:Minimize()
-    local ts = game:GetService("TweenService")
-    -- Lưu lại kích thước scale hiện tại phòng trường hợp bạn có chỉnh setting scale UI
-    if not self.SavedScale then self.SavedScale = ad.Scale end
-    
+    -- Tự động tạo một UIScale riêng biệt cho GUI chính để không vạ lây các element khác
+    local mainScale = ab:FindFirstChild("MainScale")
+    if not mainScale then
+        mainScale = Instance.new("UIScale")
+        mainScale.Name = "MainScale"
+        mainScale.Parent = ab
+    end
+
     if ab.Visible then
-        -- Hiệu ứng thu nhỏ nảy ngược vào trong (Đóng GUI)
-        self.SavedScale = ad.Scale
+        -- Thu nhỏ nảy ngược vào trong (Chỉ ảnh hưởng GUI chính)
         local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        local tween = ts:Create(ad, tweenInfo, {Scale = 0})
+        local tween = TweenService:Create(mainScale, tweenInfo, {Scale = 0})
         tween:Play()
         
-        -- Chờ thu nhỏ xong mới tàng hình
         tween.Completed:Connect(function()
-            if ad.Scale == 0 then ab.Visible = false end
+            if mainScale.Scale == 0 then ab.Visible = false end
         end)
     else
-        -- Hiệu ứng phóng to nảy nảy ra ngoài (Mở GUI)
+        -- Phóng to nảy ra ngoài
         ab.Visible = true
         local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        local tween = ts:Create(ad, tweenInfo, {Scale = self.SavedScale})
+        local tween = TweenService:Create(mainScale, tweenInfo, {Scale = 1})
         tween:Play()
     end
 end
@@ -4049,19 +4051,21 @@ UIScale=ad,
 Flags=ag
 }
 
-u(aq.Activated,function()
-as:MinimizeButton()
-end)
-
 u(ar.Activated,function()
 as:Dialog(aA)
 end)
 
-local ts = game:GetService("TweenService")
-local startScale = ad.Scale
-ad.Scale = 0 -- Bắt đầu từ mức 0 (vô hình)
+-- Hiệu ứng bung GUI chính lúc mới Execute
+local mainScale = ab:FindFirstChild("MainScale")
+if not mainScale then
+    mainScale = Instance.new("UIScale")
+    mainScale.Name = "MainScale"
+    mainScale.Parent = ab
+end
+
+mainScale.Scale = 0 -- Bắt đầu từ 0
 local tweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-ts:Create(ad, tweenInfo, {Scale = startScale}):Play()
+TweenService:Create(mainScale, tweenInfo, {Scale = 1}):Play()
 
 return as
 end
