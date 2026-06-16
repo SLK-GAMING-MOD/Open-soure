@@ -399,8 +399,10 @@ local W={
 [Enum.UserInputType.Touch]=true
 }
 
+local currentInput
 u(self.InputBegan,function(X)
 if A==false and I==nil and V[X.UserInputType]then
+currentInput=X
 N=X.Position
 O=self.Position
 I=self
@@ -408,10 +410,10 @@ R=tick()
 A=true
 
 local Y;
-
 function S()
 A=false
 I=nil
+currentInput=nil
 Y:Disconnect()
 end
 
@@ -426,7 +428,8 @@ end
 end)
 
 u(i.InputChanged,function(X)
-if I==self and W[X.UserInputType]then
+-- Thêm check điều kiện: X (input hiện tại) phải khớp với currentInput
+if I==self and W[X.UserInputType] and X==currentInput then
 T(X)
 end
 end)
@@ -2825,8 +2828,24 @@ BackgroundColor3="Colors.Buttons.Default"
 }
 })
 
-u(aw.Activated,function()
-ag:Minimize()
+local startPos, startTime
+u(aw.InputBegan, function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        startPos = input.Position
+        startTime = tick()
+    end
+end)
+
+u(aw.InputEnded, function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if startPos then
+            local dist = (input.Position - startPos).Magnitude
+            -- Nếu kéo đi xa hơn 5 pixel thì chỉ là drag, không kích hoạt Minimize
+            if dist < 5 and (tick() - startTime) < 0.5 then
+                ag:Minimize()
+            end
+        end
+    end
 end)
 
 av.Elements={}
