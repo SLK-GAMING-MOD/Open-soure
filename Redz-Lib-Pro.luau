@@ -2828,16 +2828,25 @@ BackgroundColor3="Colors.Buttons.Default"
 }
 })
 
+-- Tạo UIScale riêng cho nút để phục vụ hiệu ứng phóng to/thu nhỏ khi nhấn giữ/kéo thả
+local btnScale = Instance.new("UIScale")
+btnScale.Name = "ButtonScale"
+btnScale.Parent = aw
+
 local startPos, startTime
 u(aw.InputBegan, function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         startPos = input.Position
         startTime = tick()
+        -- Hiệu ứng mượt mà phóng to nút lên 1.15 lần khi ngón tay chạm vào (bắt đầu kéo)
+        j:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Out), {Scale = 1.15}):Play()
     end
 end)
 
 u(aw.InputEnded, function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        -- Co nút nhỏ lại về mức 1.0 (kích thước gốc) ngay khi thả tay ra
+        j:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Out), {Scale = 1.0}):Play()
         if startPos then
             local dist = (input.Position - startPos).Magnitude
             -- Nếu kéo đi xa hơn 5 pixel thì chỉ là drag, không kích hoạt Minimize
@@ -2855,9 +2864,17 @@ av.Elements.Corner=av.Corner
 av.Corner=nil
 end
 
-if av.Stroke then
-av.Elements.Stroke=av.Stroke
-av.Stroke=nil
+-- Hỗ trợ cấu hình Viền (Stroke): Nhận diện cả thuộc tính lẻ cho bro dễ dùng
+if av.StrokeColor or av.StrokeThickness then
+    av.Elements.Stroke = {
+        Color = av.StrokeColor or Color3.fromRGB(60, 60, 60),
+        Thickness = av.StrokeThickness or 1
+    }
+    av.StrokeColor = nil
+    av.StrokeThickness = nil
+elseif av.Stroke then
+    av.Elements.Stroke = av.Stroke
+    av.Stroke = nil
 end
 
 D.Draggable(aw,ad,0.5)
