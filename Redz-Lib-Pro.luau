@@ -100,8 +100,8 @@ end
 
 local s={
 Information={
-Version="v5.0.0",
-GitHubOwner="HTZ Gaming"
+Version="v1.3.47",
+GitHubOwner="72ms"
 },
 Default={
 Theme="Darker",
@@ -3173,36 +3173,13 @@ end)
 
 -- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation)
 task.spawn(function()
-    -- 1. Setup UIScale ẩn ngay từ đầu
-    local windowScale = Instance.new("UIScale")
+    -- Tạo UIScale và ẩn GUI đi để chuẩn bị làm hiệu ứng phóng to
+    local windowScale = ab:FindFirstChild("WindowScale") or Instance.new("UIScale")
     windowScale.Name = "WindowScale"
     windowScale.Scale = 0
     windowScale.Parent = ab
     
-    -- 2. Đợi GUI tính toán xong kích thước (Cách này nhanh và chính xác hơn task.wait)
-    if ab.AbsoluteSize.X == 0 then
-        ab:GetPropertyChangedSignal("AbsoluteSize"):Wait()
-    end
-    
-    -- 3. Fix tâm (Chỉ làm 1 lần duy nhất)
-    if not isInitialized then
-        local currentPos = ab.Position
-        local size = ab.AbsoluteSize
-        
-        -- Tính toán khoảng bù (Offset) để GUI không bị nhảy khỏi vị trí cũ
-        local xOffset = size.X / 2
-        local yOffset = size.Y / 2
-        
-        -- Set AnchorPoint và Position cùng lúc
-        ab.AnchorPoint = Vector2.new(0.5, 0.5)
-        ab.Position = UDim2.new(
-            currentPos.X.Scale, currentPos.X.Offset + xOffset,
-            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
-        )
-        isInitialized = true -- Đánh dấu đã xong, không bao giờ chạy lại đoạn này
-    end
-    
-    -- 4. Thực hiện hiệu ứng phóng to (Intro)
+    -- Chạy hiệu ứng mượt mà phóng to từ tâm mặc định của thư viện
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
     tween:Play()
