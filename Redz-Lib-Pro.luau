@@ -3171,29 +3171,27 @@ Z:Close()
 end
 end)
 
--- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation) phóng to từ TÂM
-task.spawn(function()
-    -- Cấu hình tâm AnchorPoint về giữa và bù trừ bằng Size tĩnh (Fix lỗi AbsoluteSize = 0)
-    if not isInitialized then
-        local currentPos = ab.Position
-        local xOffset = ab.Size.X.Offset / 2
-        local yOffset = ab.Size.Y.Offset / 2
-        
-        ab.AnchorPoint = Vector2.new(0.5, 0.5)
-        ab.Position = UDim2.new(
-            currentPos.X.Scale, currentPos.X.Offset + xOffset,
-            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
-        )
-        isInitialized = true
-    end
-
-    -- Tạo UIScale và ẩn GUI trước khi phóng to
-    local windowScale = ab:FindFirstChild("WindowScale") or Instance.new("UIScale")
+-- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation)
+local windowScale = ab:FindFirstChild("WindowScale")
+if not windowScale then
+    windowScale = Instance.new("UIScale")
     windowScale.Name = "WindowScale"
-    windowScale.Scale = 0
     windowScale.Parent = ab
-    
-    -- Chạy hiệu ứng mượt mà
+end
+
+-- Ép Scale về 0 ngay lập tức để giấu UI, không bị nháy hình lúc mới mở
+windowScale.Scale = 0
+
+if not isInitialized then
+    -- Thay vì dùng phép tính bù trừ AbsoluteSize (dễ lỗi vì AbsoluteSize = 0 lúc đầu)
+    -- Ta đưa AnchorPoint về tâm và khóa cứng Position ở đúng giữa màn hình!
+    ab.AnchorPoint = Vector2.new(0.5, 0.5)
+    ab.Position = UDim2.new(0.5, 0, 0.5, 0)
+    isInitialized = true -- Đánh dấu cho logic Minimize của bro sau này xài chung
+end
+
+-- Chạy Tween phóng to từ tâm ra
+task.spawn(function()
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
     tween:Play()
