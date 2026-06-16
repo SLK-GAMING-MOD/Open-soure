@@ -2828,25 +2828,27 @@ BackgroundColor3="Colors.Buttons.Default"
 }
 })
 
--- Tạo UIScale riêng cho nút để phục vụ hiệu ứng phóng to/thu nhỏ khi nhấn giữ/kéo thả
+-- Tạo trực tiếp UIScale và gọi TweenService để đảm bảo không bị lỗi ngầm
 local btnScale = Instance.new("UIScale")
 btnScale.Name = "ButtonScale"
 btnScale.Parent = aw
+local TS = game:GetService("TweenService")
 
 local startPos, startTime
 u(aw.InputBegan, function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         startPos = input.Position
         startTime = tick()
-        -- Hiệu ứng mượt mà phóng to nút lên 1.15 lần khi ngón tay chạm vào (bắt đầu kéo)
-        j:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Out), {Scale = 1.15}):Play()
+        -- Animation phóng to lên 1.15 lần khi chạm vào
+        TS:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = 1.15}):Play()
     end
 end)
 
 u(aw.InputEnded, function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        -- Co nút nhỏ lại về mức 1.0 (kích thước gốc) ngay khi thả tay ra
-        j:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Out), {Scale = 1.0}):Play()
+        -- Trả kích thước về bình thường ngay khi nhả tay
+        TS:Create(btnScale, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = 1.0}):Play()
+        
         if startPos then
             local dist = (input.Position - startPos).Magnitude
             -- Nếu kéo đi xa hơn 5 pixel thì chỉ là drag, không kích hoạt Minimize
@@ -2864,23 +2866,36 @@ av.Elements.Corner=av.Corner
 av.Corner=nil
 end
 
--- Hỗ trợ cấu hình Viền (Stroke): Nhận diện cả thuộc tính lẻ cho bro dễ dùng
-if av.StrokeColor or av.StrokeThickness then
+-- Fix: Tích hợp Stroke vào thẳng bảng Elements của lib
+if av.StrokeThickness or av.StrokeColor then
     av.Elements.Stroke = {
-        Color = av.StrokeColor or Color3.fromRGB(60, 60, 60),
-        Thickness = av.StrokeThickness or 1
+        Color = av.StrokeColor or Color3.fromRGB(255, 255, 255),
+        Thickness = av.StrokeThickness or 2
     }
     av.StrokeColor = nil
     av.StrokeThickness = nil
 elseif av.Stroke then
-    av.Elements.Stroke = av.Stroke
-    av.Stroke = nil
+    av.Elements.Stroke=av.Stroke
+    av.Stroke=nil
 end
 
 D.Draggable(aw,ad,0.5)
 D.SetProperties(aw,av)
 
 return aw
+end
+
+function aj:SetKeyCode(av)
+assert(au(av),`"Minimizer.SetKeyCode[param 1]". 'KeyCode' expected, got {typeof(av)}`)
+
+self.KeyCode=av
+end
+
+function ag:SelectTab(av)
+local aw=type(av)=="number"and S[av]
+
+if type(av)=="table"and av.IS_A_TAB then
+aw=av
 end
 
 function aj:SetKeyCode(av)
