@@ -2872,28 +2872,27 @@ end
 end
 
 function ag:Minimize()
-    -- Tự động tạo một UIScale riêng biệt cho GUI chính để không vạ lây các element khác
-    local mainScale = ab:FindFirstChild("MainScale")
+    local mainScale = ak:FindFirstChild("MainScale")
     if not mainScale then
         mainScale = Instance.new("UIScale")
         mainScale.Name = "MainScale"
-        mainScale.Parent = ab
+        mainScale.Parent = ak
     end
 
-    if ab.Visible then
-        -- Thu nhỏ nảy ngược vào trong (Chỉ ảnh hưởng GUI chính)
+    if ak.Visible then
+        -- Thu nhỏ nảy ngược vào trong
         local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        local tween = TweenService:Create(mainScale, tweenInfo, {Scale = 0})
+        local tween = j:Create(mainScale, tweenInfo, {Scale = 0})
         tween:Play()
         
         tween.Completed:Connect(function()
-            if mainScale.Scale == 0 then ab.Visible = false end
+            if mainScale.Scale == 0 then ak.Visible = false end
         end)
     else
         -- Phóng to nảy ra ngoài
-        ab.Visible = true
+        ak.Visible = true
         local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        local tween = TweenService:Create(mainScale, tweenInfo, {Scale = 1})
+        local tween = j:Create(mainScale, tweenInfo, {Scale = 1})
         tween:Play()
     end
 end
@@ -4056,16 +4055,16 @@ as:Dialog(aA)
 end)
 
 -- Hiệu ứng bung GUI chính lúc mới Execute
-local mainScale = ab:FindFirstChild("MainScale")
+local mainScale = ak:FindFirstChild("MainScale")
 if not mainScale then
     mainScale = Instance.new("UIScale")
     mainScale.Name = "MainScale"
-    mainScale.Parent = ab
+    mainScale.Parent = ak
 end
 
 mainScale.Scale = 0 -- Bắt đầu từ 0
 local tweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-TweenService:Create(mainScale, tweenInfo, {Scale = 1}):Play()
+j:Create(mainScale, tweenInfo, {Scale = 1}):Play()
 
 return as
 end
