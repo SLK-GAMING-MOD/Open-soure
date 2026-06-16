@@ -3171,15 +3171,29 @@ Z:Close()
 end
 end)
 
--- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation)
+-- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation) phóng to từ TÂM
 task.spawn(function()
-    -- Tạo UIScale và ẩn GUI đi để chuẩn bị làm hiệu ứng phóng to
+    -- Cấu hình tâm AnchorPoint về giữa và bù trừ bằng Size tĩnh (Fix lỗi AbsoluteSize = 0)
+    if not isInitialized then
+        local currentPos = ab.Position
+        local xOffset = ab.Size.X.Offset / 2
+        local yOffset = ab.Size.Y.Offset / 2
+        
+        ab.AnchorPoint = Vector2.new(0.5, 0.5)
+        ab.Position = UDim2.new(
+            currentPos.X.Scale, currentPos.X.Offset + xOffset,
+            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
+        )
+        isInitialized = true
+    end
+
+    -- Tạo UIScale và ẩn GUI trước khi phóng to
     local windowScale = ab:FindFirstChild("WindowScale") or Instance.new("UIScale")
     windowScale.Name = "WindowScale"
     windowScale.Scale = 0
     windowScale.Parent = ab
     
-    -- Chạy hiệu ứng mượt mà phóng to từ tâm mặc định của thư viện
+    -- Chạy hiệu ứng mượt mà
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
     tween:Play()
