@@ -2870,27 +2870,47 @@ end
 end
 
 local isAnimating = false
+local isInitialized = false -- Thêm biến này để khóa việc chỉnh vị trí
+
 function ag:Minimize()
     if isAnimating then return end
     isAnimating = true
     
+    -- 1. Tạo UIScale
     local windowScale = ab:FindFirstChild("WindowScale")
     if not windowScale then
         windowScale = Instance.new("UIScale")
         windowScale.Name = "WindowScale"
         windowScale.Parent = ab
+        windowScale.Scale = 1
     end
-
-    ab.AnchorPoint = Vector2.new(0.5, 0.5)
-    ab.Position = UDim2.new(0.5, ab.Position.X.Offset, 0.5, ab.Position.Y.Offset)
     
+    -- 2. Chỉ chỉnh AnchorPoint và bù trừ Position 1 lần duy nhất lúc bắt đầu
+    if not isInitialized then
+        -- Lưu vị trí cũ
+        local currentPos = ab.Position
+        -- Tính toán bù trừ để GUI không bị nhảy
+        local xOffset = ab.AbsoluteSize.X / 2
+        local yOffset = ab.AbsoluteSize.Y / 2
+        
+        ab.AnchorPoint = Vector2.new(0.5, 0.5)
+        ab.Position = UDim2.new(
+            currentPos.X.Scale, currentPos.X.Offset + xOffset,
+            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
+        )
+        isInitialized = true -- Đánh dấu đã xong
+    end
+    
+    -- 3. Logic Animation
     if ab.Visible then
+        -- Thu nhỏ
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
         local tween = j:Create(windowScale, tweenInfo, {Scale = 0})
         tween:Play()
         tween.Completed:Wait()
         ab.Visible = false
     else
+        -- Phóng to
         windowScale.Scale = 0
         ab.Visible = true
         local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
