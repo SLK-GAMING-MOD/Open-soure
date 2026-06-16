@@ -4075,56 +4075,9 @@ Title="Cancel"
 }
 }
 
-local isMinimized = false
-local originalSize = nil
-local hiddenElements = {}
-
--- Hiệu ứng Hover cho nút thu nhỏ (-)
 u(aq.MouseEnter,function()aq.BackgroundTransparency=0.65 end)
 u(aq.MouseLeave,function()aq.BackgroundTransparency=1.00 end)
 
--- Xử lý thu nhỏ / phóng to khi bấm nút aq (Hỗ trợ hoàn hảo cả PC & Mobile)
-u(aq.Activated, function()
-    isMinimized = not isMinimized
-    ak.ClipsDescendants = true -- Bật cái này để khi bóp nhỏ khung, các phần tử bên trong không bị tràn ra ngoài
-    
-    if isMinimized then
-        -- 1. Lưu lại kích thước ban đầu của MainFrame (ak)
-        originalSize = ak.Size
-        
-        -- 2. Ẩn tạm thời các phần tử con lọt ra ngoài (trừ thanh TopBar an)
-        hiddenElements = {}
-        for _, child in ipairs(ak:GetChildren()) do
-            if child:IsA("GuiObject") and child ~= an then
-                hiddenElements[child] = child.Visible
-                child.Visible = false
-            end
-        end
-        
-        -- 3. Thu nhỏ chiều cao MainFrame về bằng chiều cao thanh TopBar
-        local topbarHeight = an and an.Size.Y.Offset or 35
-        j:Create(ak, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-            Size = UDim2.new(originalSize.X.Scale, originalSize.X.Offset, 0, topbarHeight)
-        }):Play()
-    else
-        -- 1. Phóng to MainFrame về lại kích thước cũ
-        if originalSize then
-            j:Create(ak, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-                Size = originalSize
-            }):Play()
-        end
-        
-        -- 2. Hiện lại các phần tử con về trạng thái hiển thị ban đầu
-        for child, wasVisible in pairs(hiddenElements) do
-            if child and child.Parent then
-                child.Visible = wasVisible
-            end
-        end
-        hiddenElements = {}
-    end
-end)
-
--- Hiệu ứng Hover cho nút đóng (X)
 u(ar.MouseEnter,function()ar.BackgroundTransparency=0.65 end)
 u(ar.MouseLeave,function()ar.BackgroundTransparency=1.00 end)
 
@@ -4148,6 +4101,10 @@ Flags=ag
 
 u(ar.Activated,function()
 as:Dialog(aA)
+end)
+
+u(aq.Activated,function()
+as:MinimizeButton()
 end)
 
 -- Hiệu ứng bung GUI chính lúc mới Execute
