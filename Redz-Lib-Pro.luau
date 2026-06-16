@@ -3171,6 +3171,34 @@ Z:Close()
 end
 end)
 
+-- Hiệu ứng xuất hiện GUI lần đầu (Intro Animation)
+task.spawn(function()
+    local windowScale = Instance.new("UIScale")
+    windowScale.Name = "WindowScale"
+    windowScale.Scale = 0
+    windowScale.Parent = ab
+    
+    task.wait() -- Đợi 1 frame để GUI load xong kích thước thực tế (AbsoluteSize)
+    
+    if not isInitialized then
+        local currentPos = ab.Position
+        local xOffset = ab.AbsoluteSize.X / 2
+        local yOffset = ab.AbsoluteSize.Y / 2
+        
+        ab.AnchorPoint = Vector2.new(0.5, 0.5)
+        ab.Position = UDim2.new(
+            currentPos.X.Scale, currentPos.X.Offset + xOffset,
+            currentPos.Y.Scale, currentPos.Y.Offset + yOffset
+        )
+        isInitialized = true -- Đánh dấu đã cấu hình xong tâm vị trí để không bị lỗi khi bấm Minimize sau này
+    end
+    
+    -- Thực hiện hiệu ứng phóng to từ tâm ra ngoài cực mượt
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local tween = j:Create(windowScale, tweenInfo, {Scale = 1})
+    tween:Play()
+end)
+
 ag.StartWindow=nil
 end
 
