@@ -3095,6 +3095,24 @@ assert(#aE>0,"\"Window.SetSubTitle\". the new 'SubTitle' is too short.")
 aA.Text=aE
 end
 
+-- Thêm hàm SetUISize để điều chỉnh kích thước GUI sau khi load
+function ag:SetUISize(width, height)
+local w = type(width) == "number" and math.clamp(width, 430, 1000) or aC.X.Offset
+local h = type(height) == "number" and math.clamp(height, 200, 500) or aC.Y.Offset
+local newSize = UDim2.fromOffset(w, h)
+
+aC = newSize -- Cập nhật bộ nhớ kích thước để không bị lỗi lúc Minimize
+
+if not self.Minimized then
+    -- Tween mượt mà nút kéo góc, nó sẽ tự động kích hoạt event để kéo cả giao diện theo
+    J(ay[1], "Position", newSize, 0.3):Play()
+else
+    -- Nếu GUI đang thu gọn, cập nhật ngầm size mới mà không làm bung GUI ra
+    ay[1].Position = newSize
+    ax.Size = UDim2.fromOffset(w, az.Size.Y.Offset)
+end
+end
+
 W=E("Frame",I,{
 Size=UDim2.new(0,280,1,0),
 Position=UDim2.fromScale(1,0),
