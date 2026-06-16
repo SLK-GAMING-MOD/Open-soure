@@ -4078,8 +4078,23 @@ Title="Cancel"
 u(aq.MouseEnter,function()aq.BackgroundTransparency=0.65 end)
 u(aq.MouseLeave,function()aq.BackgroundTransparency=1.00 end)
 
+local isMinimized = false
+local originalHeight = 350 -- Bro nhớ chỉnh số này cho khớp với độ cao UI thực tế nhé
+
 u(ar.MouseEnter,function()ar.BackgroundTransparency=0.65 end)
 u(ar.MouseLeave,function()ar.BackgroundTransparency=1.00 end)
+
+u(ar.InputBegan, function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        isMinimized = not isMinimized
+        
+        if isMinimized then
+            j:Create(ad, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Size = UDim2.new(0, ad.Size.X.Offset, 0, 35)}):Play()
+        else
+            j:Create(ad, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Size = UDim2.new(0, ad.Size.X.Offset, 0, originalHeight)}):Play()
+        end
+    end
+end)
 
 as.SetUIScale=self.SetUIScale
 as.SUBTITLE_LABEL=ao.SubTitle
