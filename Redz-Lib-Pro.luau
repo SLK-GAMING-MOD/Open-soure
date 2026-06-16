@@ -3992,14 +3992,14 @@ end)
 
 local aA={
 Title="Close Window?",
-Content="You Want Close UI?",
+Content="Are you sure you want to close the script?",
 Options={
 {
-Title="Yes",
+Title="Continue",
 Callback=function()self:Destroy()end
 },
 {
-Title="No"
+Title="Cancel"
 }
 }
 }
