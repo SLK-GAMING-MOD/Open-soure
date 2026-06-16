@@ -4048,9 +4048,9 @@ Corner=UDim.new(0,6)
 ThemeTag={
 BackgroundColor3="Colors.OnPrimary"
 }
-})local ay=function(
+})
 
-ay)
+local ay=function(ay)
 local az=ay:GetAttribute"Resizing"
 ay:SetAttribute("Resizing",tick())
 
@@ -4066,16 +4066,37 @@ J(ay,"BackgroundTransparency",1,0.4):Play()end
 u(aw:GetPropertyChangedSignal"Position",function()
 ay(aw)
 local az=aw.Position
-ak.Size=az
+if ak.Size ~= az then
+    ak.Size=az
+end
 af.UISize={az.X.Offset,az.Y.Offset}
 end)
 
 u(ax:GetPropertyChangedSignal"Position",function()
 ay(ax)
 local az=ax.Position
-at.Size=UDim2.new(0,az.X.Offset,1,-an.Size.Y.Offset)
-au.Size=UDim2.new(1,-at.Size.X.Offset,1,-an.Size.Y.Offset)
+local aZ_TabsSize = UDim2.new(0,az.X.Offset,1,-an.Size.Y.Offset)
+if at.Size ~= aZ_TabsSize then
+    at.Size=aZ_TabsSize
+    au.Size=UDim2.new(1,-az.X.Offset,1,-an.Size.Y.Offset)
+end
 af.TabSize=az.X.Offset
+end)
+
+-- [Tính năng mới]: Tự động cập nhật vị trí nút kéo và TỰ ĐỘNG LƯU FILE khi Size của Window thay đổi từ script ngoài (Không cần reload)
+u(ak:GetPropertyChangedSignal"Size", function()
+    if aw.Position ~= ak.Size then
+        aw.Position = ak.Size
+    end
+    af.UISize = {ak.Size.X.Offset, ak.Size.Y.Offset}
+end)
+
+-- [Tính năng mới]: Tự động cập nhật vị trí thanh kéo khi Size của Tabs thay đổi từ script ngoài (Không cần reload)
+u(at:GetPropertyChangedSignal"Size", function()
+    local targetPos = UDim2.new(0, at.Size.X.Offset, 0.5, 15)
+    if ax.Position ~= targetPos then
+        ax.Position = targetPos
+    end
 end)
 
 D.Draggable(aw,ad,0.68,function(az,aA,aB,aC)
@@ -4085,6 +4106,11 @@ end)
 D.Draggable(ax,ad,0.68,function(aA,aB)
 return UDim2.new(0,math.clamp(aB,135,210),0.5,15)
 end)
+
+-- [MẸO QUAN TRỌNG]: Xuất MainFrame trực tiếp ra biến as (Window) để Script bên ngoài sử dụng đổi size siêu mượt
+if as and type(as) == "table" then
+    as.MainFrame = ak
+end
 
 local aA={
 Title="Close Window?",
