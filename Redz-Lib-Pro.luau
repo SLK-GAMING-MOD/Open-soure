@@ -3912,23 +3912,36 @@ Color="Colors.Background"
 }
 })
 
--- BẮT ĐẦU THÊM BACKGROUND IMAGE (Code mới)
+-- BẮT ĐẦU THÊM BACKGROUND IMAGE VÀ LỚP PHỦ (Code mới)
 if ae.Background then
+    -- Lớp 1: Ảnh nền (Nằm dưới cùng)
     E("ImageLabel", "BackgroundImage", ak, {
         Size = UDim2.fromScale(1, 1),
-        BackgroundTransparency = 1, -- Nền trong suốt để lộ ảnh
+        BackgroundTransparency = 1, 
         Image = ae.Background,
-        ScaleType = Enum.ScaleType.Crop, -- Zoom ảnh vừa khung, không bị méo
-        ZIndex = 0, -- Đẩy ảnh xuống lớp dưới cùng, không che mất các nút bấm
+        ScaleType = Enum.ScaleType.Crop, 
+        ZIndex = 0, 
         ThemeTag = {
-            ImageTransparency = "BackgroundTransparency" -- Tự động đồng bộ độ mờ với UI
+            ImageTransparency = "BackgroundTransparency" 
         },
         Elements = {
-            Corner = UDim.new(0, 8) -- Bo viền ảnh khớp với viền UI
+            Corner = UDim.new(0, 8) 
+        }
+    })
+
+    -- Lớp 2: Lớp phủ đen mờ (Nằm đè lên ảnh, nhưng dưới các nút bấm)
+    E("Frame", "BackgroundOverlay", ak, {
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0), -- Màu của lớp phủ (Đang để màu đen)
+        BackgroundTransparency = 0.5, -- Độ trong suốt của lớp phủ
+        ZIndex = 0, -- Cùng ZIndex = 0 nhưng load sau nên sẽ đè lên ảnh nền
+        BorderSizePixel = 0,
+        Elements = {
+            Corner = UDim.new(0, 8) -- Bo góc khớp với ảnh và UI
         }
     })
 end
--- KẾT THÚC THÊM BACKGROUND IMAGE
+-- KẾT THÚC THÊM BACKGROUND IMAGE VÀ LỚP PHỦ
 
 u(ak.Destroying,function()
 self:Destroy()
