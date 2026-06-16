@@ -2872,7 +2872,28 @@ end
 end
 
 function ag:Minimize()
-ab.Visible=not ab.Visible
+    local ts = game:GetService("TweenService")
+    -- Lưu lại kích thước scale hiện tại phòng trường hợp bạn có chỉnh setting scale UI
+    if not self.SavedScale then self.SavedScale = ad.Scale end
+    
+    if ab.Visible then
+        -- Hiệu ứng thu nhỏ nảy ngược vào trong (Đóng GUI)
+        self.SavedScale = ad.Scale
+        local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        local tween = ts:Create(ad, tweenInfo, {Scale = 0})
+        tween:Play()
+        
+        -- Chờ thu nhỏ xong mới tàng hình
+        tween.Completed:Connect(function()
+            if ad.Scale == 0 then ab.Visible = false end
+        end)
+    else
+        -- Hiệu ứng phóng to nảy nảy ra ngoài (Mở GUI)
+        ab.Visible = true
+        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        local tween = ts:Create(ad, tweenInfo, {Scale = self.SavedScale})
+        tween:Play()
+    end
 end
 
 function ag:MakeTab(av)
@@ -4035,6 +4056,12 @@ end)
 u(ar.Activated,function()
 as:Dialog(aA)
 end)
+
+local ts = game:GetService("TweenService")
+local startScale = ad.Scale
+ad.Scale = 0 -- Bắt đầu từ mức 0 (vô hình)
+local tweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+ts:Create(ad, tweenInfo, {Scale = startScale}):Play()
 
 return as
 end
