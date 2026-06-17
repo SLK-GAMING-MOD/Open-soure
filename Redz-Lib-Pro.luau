@@ -1120,8 +1120,9 @@ AutomaticSize=Enum.AutomaticSize.X,
 Active=true,
 Elements=aq,
 Text="",
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
 ThemeTag={
-BackgroundTransparency="BackgroundTransparency"
+BackgroundColor3="Colors.Stroke"
 },
 Childs={
 E("UIPadding",{
@@ -1142,11 +1143,11 @@ Visible=false,
 PlaceholderText="Search...",
 ClearTextOnFocus=false,
 Text="",
+BackgroundTransparency=1, -- Fix: Ép ô nhập chữ trong suốt hoàn toàn
 Elements={
 Corner=UDim.new(0,6)
 },
 ThemeTag={
-BackgroundColor3="Colors.Stroke",
 TextColor3="Colors.Text.Default",
 Font="Font.ExtraBold"
 }
@@ -1158,7 +1159,6 @@ Position=UDim2.fromScale(0.5,0.5),
 AnchorPoint=Vector2.new(0.5,0.5),
 BackgroundTransparency=1,
 ThemeTag={
-BackgroundColor3="Colors.Stroke",
 ImageColor3="Colors.Icons",
 Image="Icons.Search"
 }
@@ -3423,7 +3423,7 @@ AutomaticSize=Enum.AutomaticSize.Y,
 Size=UDim2.fromScale(1,1),
 AutoButtonColor=false,
 Text="",
-BackgroundTransparency = s.HasBackground and 0.65 or 0,
+BackgroundTransparency = s.HasBackground and 0.5 or 0,
 ThemeTag={
     BackgroundColor3="Colors.Buttons.Default"
 },
