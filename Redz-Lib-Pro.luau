@@ -1998,13 +1998,9 @@ local aN=E("TextLabel",aJ,{
 Size=UDim2.new(0,50,0,14),
 AnchorPoint=Vector2.new(1,0.5),
 Position=UDim2.new(0,-1,0.5,0),
-BackgroundColor3 = Color3.fromRGB(100, 100, 100), -- Thêm màu nền xám
-BackgroundTransparency = s.HasBackground and 0.65 or 0, -- Hiện nền lên (thay vì = 1 như cũ)
+BackgroundTransparency=1,
 TextSize=12,
-TextXAlignment=Enum.TextXAlignment.Center, -- Fix thành Center để số nằm giữa ô cho đẹp
-Elements={
-    Corner=UDim.new(0, 4) -- Thêm tí bo tròn góc nhìn cho giống cái hộp
-},
+TextXAlignment=Enum.TextXAlignment.Right,
 ThemeTag={
 OBJECTS=aE,
 TextColor3="Colors.Text.Default",
@@ -2445,14 +2441,14 @@ local aH=E("Frame",aE,{
 Size=UDim2.new(0,150,0,18),
 Position=UDim2.new(1,-10,0.5),
 AnchorPoint=Vector2.new(1,0.5),
-BackgroundColor3 = Color3.fromRGB(100, 100, 100), -- Đã thêm màu xám vào đây
+BackgroundColor3 = Color3.fromRGB(40, 40, 40), -- Chỉnh thành xám đen tại đây
 BackgroundTransparency = s.HasBackground and 0.65 or 0,
 ThemeTag={
 OBJECTS=aD
+-- Đã xóa dòng BackgroundColor3 ở trong này để nó không bị màu đen của Theme đè lên nữa
 },
 Elements=textBoxElements
 })
-
 
 local aI=E("TextLabel",aH,{
 Size=UDim2.new(0.85,0,0.85,0),
