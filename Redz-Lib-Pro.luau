@@ -3893,26 +3893,6 @@ ah=UDim2.fromOffset(ak,al)
 end
 end
 
-local ak=E("Frame","Window",I,{
-    AnchorPoint=Vector2.new(0.5, 0.5),
-    Position=UDim2.fromScale(0.5, 0.5),
-    Active=true,
-    Size=ah,
-    ThemeTag={
-        BackgroundTransparency="BackgroundTransparency"
-    },
-Elements={
-Corner=UDim.new(0,8),
-Gradient={
-Rotation=45,
-ThemeTag={
-Color="Colors.Background"
-}
-}
-}
-})
-
--- BẮT ĐẦU TẠO MAIN GUI VÀ BACKGROUND (Code chuẩn)
 local windowProperties = {
     AnchorPoint = Vector2.new(0.5, 0.5),
     Position = UDim2.fromScale(0.5, 0.5),
