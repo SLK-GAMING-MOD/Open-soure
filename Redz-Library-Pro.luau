@@ -5910,6 +5910,26 @@ function RedzMod:CreateWindow(Config)
 		end;
 	end;
 
+	function Window:OpenUI()
+		-- Kiểm tra nếu GUI đang đóng thì mới mở
+		if not Window.Signal:GetValue() then
+			Window.Signal:SetValue(true);
+			if Window.__3DRender then
+				Window.Load3DBlock();
+			end;
+		end;
+	end;
+
+	function Window:CloseUI()
+		-- Kiểm tra nếu GUI đang mở thì mới đóng
+		if Window.Signal:GetValue() then
+			Window.Signal:SetValue(false);
+			if Window.__3DRender then
+				Window.Load3DBlock();
+			end;
+		end;
+	end;
+
 	function Window:Watermark()
 		if RedzMod.__WatermarkCache then
 			return RedzMod.__WatermarkCache;
