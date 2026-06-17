@@ -848,13 +848,18 @@ ao.Set=ao.SetValue
 end local al=function(
 
 al, am, an)
+
+local tabElements = { Corner=UDim.new(0,6) }
+if s.HasBackground then
+    tabElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+end
+
 local ao=E("TextButton","Button",an,{
 Size=UDim2.new(1,0,0,24),
 AutoButtonColor=false,
 Text="",
-Elements={
-Corner=UDim.new(0,6)
-},
+BackgroundTransparency = s.HasBackground and 0.65 or 0, -- Tự động làm mờ thành kính
+Elements=tabElements,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default"
 },
@@ -978,15 +983,20 @@ OBJECTS=ar,
 BackgroundColor3="Colors.Buttons.Default"
 }
 
+-- Tự động thêm viền mờ (Stroke) nếu đang dùng giao diện kính
+local optionElements = { Corner=UDim.new(0,6) }
+if s.HasBackground then
+    optionElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+end
+
 local av=E("TextButton","Option",{
 AutomaticSize=Enum.AutomaticSize.Y,
 Size=UDim2.new(1,0,0,25),
 AutoButtonColor=false,
 Text="",
+BackgroundTransparency = s.HasBackground and 0.6 or 0, -- Tự động làm mờ thành kính
 ThemeTag=au,
-Elements={
-Corner=UDim.new(0,6)
-},
+Elements=optionElements,
 Childs={
 E("Frame","Holder",{
 AutomaticSize=Enum.AutomaticSize.Y,
@@ -1413,12 +1423,12 @@ end
 
 return a2 and a1:find(a0,1,true)~=nil end local a_=function(
 
-
 a_, a0)
 local a1=E("TextButton",{
 Size=UDim2.new(1,0,0,21),
 AutoButtonColor=false,
 Text="",
+BackgroundTransparency = s.HasBackground and 0.65 or 0, -- Tự động làm mờ
 Elements={
 Corner=UDim.new(0,4)
 },
@@ -3741,8 +3751,10 @@ local ae={
 Title=ab[1]or ab.Name or ab.Title,
 SubTitle=ab[2]or ab.SubName or ab.SubTitle,
 ScriptFolder=ab[3]or ab.ScriptFolder or ab.FolderName,
-Background=ab.Background or ab.BackgroundImage -- Thêm dòng này để nhận link ảnh
+Background=ab.Background or ab.BackgroundImage
 }
+
+s.HasBackground = ae.Background ~= nil
 
 assert(type(ae.Title)=="string",`"Window.Title". 'string' expected, got {typeof(ae.Title)}`)
 assert(type(ae.SubTitle)=="string",`"Window.SubTitle". 'string' expected, got {typeof(ae.SubTitle)}`)
