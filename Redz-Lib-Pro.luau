@@ -3912,28 +3912,55 @@ Color="Colors.Background"
 }
 })
 
--- BẮT ĐẦU THÊM BACKGROUND IMAGE VÀ LỚP PHỦ (Code mới)
+-- BẮT ĐẦU TẠO MAIN GUI VÀ BACKGROUND (Code mới update)
+local windowProperties = {
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    Position = UDim2.fromScale(0.5, 0.5),
+    Active = true,
+    Size = ah,
+    Elements = {
+        Corner = UDim.new(0, 8)
+    }
+}
+
+-- Xử lý logic: Nếu KHÔNG có ảnh nền thì dùng màu của Theme, NẾU CÓ thì làm GUI trong suốt
+if not ae.Background then
+    windowProperties.ThemeTag = {
+        BackgroundTransparency = "BackgroundTransparency"
+    }
+    windowProperties.Elements.Gradient = {
+        Rotation = 45,
+        ThemeTag = { Color = "Colors.Background" }
+    }
+else
+    -- Ép khung GUI chính tàng hình hoàn toàn để nhường chỗ cho ảnh nền
+    windowProperties.BackgroundTransparency = 1
+end
+
+local ak = E("Frame", "Window", I, windowProperties)
+
+-- TẠO LỚP ẢNH VÀ LỚP PHỦ (Chỉ chạy khi có link ảnh)
 if ae.Background then
-    -- Lớp 1: Ảnh nền (Nằm dưới cùng)
+    -- Lớp 1: Ảnh nền
     E("ImageLabel", "BackgroundImage", ak, {
         Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1, 
         Image = ae.Background,
         ScaleType = Enum.ScaleType.Crop, 
         ZIndex = 0, 
-        -- Đã xóa ThemeTag và đặt giá trị thủ công để ảnh có thể trong suốt
-        ImageTransparency = 0.6, -- 💡 Gợi ý: Chỉnh từ 0 (rõ nét) đến 1 (tàng hình). 0.6 là mức mờ vừa phải đẹp mắt.
+        -- Độ mờ của bức ảnh. Nếu là ảnh PNG đã có phần trong suốt, bạn có thể để 0 (hiện rõ ảnh).
+        -- Nếu muốn ảnh mờ đều đi để thấy game, tăng số này lên (ví dụ 0.3 - 0.5)
+        ImageTransparency = 0.2, 
         Elements = {
             Corner = UDim.new(0, 8) 
         }
     })
 
-    -- Lớp 2: Lớp phủ đen mờ (Nằm đè lên ảnh, giúp chữ dễ đọc hơn)
+    -- Lớp 2: Lớp phủ đen mờ (Dìm màu ảnh xuống để chữ trên UI không bị chìm)
     E("Frame", "BackgroundOverlay", ak, {
         Size = UDim2.fromScale(1, 1),
         BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-        -- Giảm độ tối của lớp phủ xuống để UI trong trẻo hơn
-        BackgroundTransparency = 0.75, -- 💡 Gợi ý: Càng gần 1 thì lớp phủ đen càng mờ, ảnh sẽ càng sáng.
+        BackgroundTransparency = 0.55, -- Càng cao lớp đen này càng nhạt đi
         ZIndex = 0, 
         BorderSizePixel = 0,
         Elements = {
@@ -3941,7 +3968,7 @@ if ae.Background then
         }
     })
 end
--- KẾT THÚC THÊM BACKGROUND IMAGE VÀ LỚP PHỦ
+-- KẾT THÚC TẠO MAIN GUI VÀ BACKGROUND
 
 u(ak.Destroying,function()
 self:Destroy()
