@@ -1088,20 +1088,16 @@ return ap end local ap=function()
 
 local ap=160
 
-local aq={
-Corner=UDim.new(0,6),
-Stroke={
-ThemeTag={
-Color="Colors.Stroke"
-}
-},
-Gradient={
-Rotation=45,
-ThemeTag={
-Color="Colors.Background"
-}
-}
-}
+local aq = { Corner=UDim.new(0,6) }
+local asThemeTag = {}
+
+if s.HasBackground then
+    aq.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+else
+    aq.Stroke = { ThemeTag = { Color = "Colors.Stroke" } }
+    aq.Gradient = { Rotation = 45, ThemeTag = { Color = "Colors.Background" } }
+    asThemeTag = { BackgroundTransparency="BackgroundTransparency" }
+end
 
 local ar=E("TextButton",OutBox,{
 Size=UDim2.fromScale(1,1),
@@ -1113,11 +1109,10 @@ Text=""
 local as=E("Frame","Dropdown",ar,{
 Size=UDim2.fromOffset(ap,100),
 Position=UDim2.fromOffset(50,50),
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
 Elements=aq,
 Active=true,
-ThemeTag={
-BackgroundTransparency="BackgroundTransparency"
-}
+ThemeTag=asThemeTag
 })
 
 local at=E("TextButton","Search",as,{
@@ -1421,17 +1416,19 @@ a2=aZ.Selected==(a_=="+")
 a0=a0:sub(2,-1)
 end
 
-return a2 and a1:find(a0,1,true)~=nil end local a_=function(
+return a2 and a1:find(a0,1,true)~=nil end local a_=function(a_, a0)
 
-a_, a0)
+local dropdownOptionElements = { Corner=UDim.new(0,4) }
+if s.HasBackground then
+    dropdownOptionElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+end
+
 local a1=E("TextButton",{
 Size=UDim2.new(1,0,0,21),
 AutoButtonColor=false,
 Text="",
-BackgroundTransparency = s.HasBackground and 0.65 or 0, -- Tự động làm mờ
-Elements={
-Corner=UDim.new(0,4)
-},
+BackgroundTransparency = s.HasBackground and 0.65 or 0, -- Tự động làm mờ thành kính
+Elements=dropdownOptionElements,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default"
 },
@@ -1644,13 +1641,17 @@ end
 local aB=V[self]
 local aC,aD,aE=am(self,aw,ax,UDim2.new(1,-38,0,0))
 
+local toggleElements = { Corner=UDim.new(0.5,0) }
+if s.HasBackground then
+    toggleElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+end
+
 local aF=E("Frame",aC,{
 Size=UDim2.new(0,35,0,18),
 Position=UDim2.new(1,-10,0.5),
 AnchorPoint=Vector2.new(1,0.5),
-Elements={
-Corner=UDim.new(0.5,0)
-},
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
+Elements=toggleElements,
 ThemeTag={
 OBJECTS=aB,
 BackgroundColor3="Colors.Stroke"
@@ -1810,16 +1811,20 @@ end
 local aD=V[self]
 local aE,aF,aG=am(self,aw,ax,UDim2.new(1,-150,0,0))
 
+local dropdownToggleElements = { Corner=UDim.new(0,4) }
+if s.HasBackground then
+    dropdownToggleElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+end
+
 local aH=E("Frame",aE,{
 Size=UDim2.new(0,150,0,18),
 Position=UDim2.new(1,-10,0.5),
 AnchorPoint=Vector2.new(1,0.5),
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
+Elements=dropdownToggleElements,
 ThemeTag={
 OBJECTS=aD,
 BackgroundColor3="Colors.Stroke"
-},
-Elements={
-Corner=UDim.new(0,4)
 }
 })
 
@@ -2421,17 +2426,21 @@ end
 local aD=V[self]
 local aE,aF,aG=am(self,aw,ax,UDim2.new(1,-150,0,0))
 
+local textBoxElements = { Corner=UDim.new(0,4) }
+if s.HasBackground then
+    textBoxElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+end
+
 local aH=E("Frame",aE,{
 Size=UDim2.new(0,150,0,18),
 Position=UDim2.new(1,-10,0.5),
 AnchorPoint=Vector2.new(1,0.5),
-Elements={
-Corner=UDim.new(0,4)
-},
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
 ThemeTag={
 OBJECTS=aD,
 BackgroundColor3="Colors.Stroke"
-}
+},
+Elements=textBoxElements
 })
 
 local aI=E("TextLabel",aH,{
@@ -3395,23 +3404,24 @@ BackgroundTransparency=1,
 AutomaticSize=Enum.AutomaticSize.Y
 })
 
+local notifyElements = { Corner=UDim.new(0,9) }
+local notifyThemeTag = {}
+
+if s.HasBackground then
+    notifyElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+else
+    notifyElements.Gradient = { Rotation=45, ThemeTag={ Color="Colors.Background" } }
+    notifyThemeTag = { BackgroundTransparency="BackgroundTransparency" }
+end
+
 local aB=E("TextButton",aA,{
 AutomaticSize=Enum.AutomaticSize.Y,
 Size=UDim2.fromScale(1,1),
 AutoButtonColor=false,
 Text="",
-ThemeTag={
-BackgroundTransparency="BackgroundTransparency"
-},
-Elements={
-Corner=UDim.new(0,9),
-Gradient={
-Rotation=45,
-ThemeTag={
-Color="Colors.Background"
-}
-}
-}
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
+ThemeTag=notifyThemeTag,
+Elements=notifyElements
 })
 
 local aC=E("UIScale",aA)
