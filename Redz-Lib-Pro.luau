@@ -3912,18 +3912,19 @@ Color="Colors.Background"
 }
 })
 
--- BẮT ĐẦU TẠO MAIN GUI VÀ BACKGROUND (Code mới update)
+-- BẮT ĐẦU TẠO MAIN GUI VÀ BACKGROUND (Code chuẩn)
 local windowProperties = {
     AnchorPoint = Vector2.new(0.5, 0.5),
     Position = UDim2.fromScale(0.5, 0.5),
     Active = true,
     Size = ah,
+    ClipsDescendants = true, -- Sửa lỗi: Giúp gọt gọn ảnh nền không bị tràn ra khi bạn thu gọn GUI
     Elements = {
         Corner = UDim.new(0, 8)
     }
 }
 
--- Xử lý logic: Nếu KHÔNG có ảnh nền thì dùng màu của Theme, NẾU CÓ thì làm GUI trong suốt
+-- Xử lý logic: Nếu KHÔNG có ảnh nền thì dùng màu mặc định, NẾU CÓ thì làm GUI trong suốt
 if not ae.Background then
     windowProperties.ThemeTag = {
         BackgroundTransparency = "BackgroundTransparency"
@@ -3933,34 +3934,30 @@ if not ae.Background then
         ThemeTag = { Color = "Colors.Background" }
     }
 else
-    -- Ép khung GUI chính tàng hình hoàn toàn để nhường chỗ cho ảnh nền
+    -- Xóa sổ màu nền của GUI nhường chỗ cho Background Image
     windowProperties.BackgroundTransparency = 1
 end
 
 local ak = E("Frame", "Window", I, windowProperties)
 
--- TẠO LỚP ẢNH VÀ LỚP PHỦ (Chỉ chạy khi có link ảnh)
+-- TẠO LỚP ẢNH VÀ LỚP PHỦ
 if ae.Background then
-    -- Lớp 1: Ảnh nền
     E("ImageLabel", "BackgroundImage", ak, {
         Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1, 
         Image = ae.Background,
         ScaleType = Enum.ScaleType.Crop, 
         ZIndex = 0, 
-        -- Độ mờ của bức ảnh. Nếu là ảnh PNG đã có phần trong suốt, bạn có thể để 0 (hiện rõ ảnh).
-        -- Nếu muốn ảnh mờ đều đi để thấy game, tăng số này lên (ví dụ 0.3 - 0.5)
-        ImageTransparency = 0.2, 
+        ImageTransparency = 0.2, -- Chỉnh độ mờ của ảnh gốc
         Elements = {
             Corner = UDim.new(0, 8) 
         }
     })
 
-    -- Lớp 2: Lớp phủ đen mờ (Dìm màu ảnh xuống để chữ trên UI không bị chìm)
     E("Frame", "BackgroundOverlay", ak, {
         Size = UDim2.fromScale(1, 1),
         BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-        BackgroundTransparency = 0.55, -- Càng cao lớp đen này càng nhạt đi
+        BackgroundTransparency = 0.55, -- Chỉnh độ mờ lớp phủ đen
         ZIndex = 0, 
         BorderSizePixel = 0,
         Elements = {
@@ -3968,7 +3965,6 @@ if ae.Background then
         }
     })
 end
--- KẾT THÚC TẠO MAIN GUI VÀ BACKGROUND
 
 u(ak.Destroying,function()
 self:Destroy()
