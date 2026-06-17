@@ -3921,23 +3921,23 @@ if ae.Background then
         Image = ae.Background,
         ScaleType = Enum.ScaleType.Crop, 
         ZIndex = 0, 
-        ThemeTag = {
-            ImageTransparency = "BackgroundTransparency" 
-        },
+        -- Đã xóa ThemeTag và đặt giá trị thủ công để ảnh có thể trong suốt
+        ImageTransparency = 0.6, -- 💡 Gợi ý: Chỉnh từ 0 (rõ nét) đến 1 (tàng hình). 0.6 là mức mờ vừa phải đẹp mắt.
         Elements = {
             Corner = UDim.new(0, 8) 
         }
     })
 
-    -- Lớp 2: Lớp phủ đen mờ (Nằm đè lên ảnh, nhưng dưới các nút bấm)
+    -- Lớp 2: Lớp phủ đen mờ (Nằm đè lên ảnh, giúp chữ dễ đọc hơn)
     E("Frame", "BackgroundOverlay", ak, {
         Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Color3.fromRGB(0, 0, 0), -- Màu của lớp phủ (Đang để màu đen)
-        BackgroundTransparency = 0.5, -- Độ trong suốt của lớp phủ
-        ZIndex = 0, -- Cùng ZIndex = 0 nhưng load sau nên sẽ đè lên ảnh nền
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+        -- Giảm độ tối của lớp phủ xuống để UI trong trẻo hơn
+        BackgroundTransparency = 0.75, -- 💡 Gợi ý: Càng gần 1 thì lớp phủ đen càng mờ, ảnh sẽ càng sáng.
+        ZIndex = 0, 
         BorderSizePixel = 0,
         Elements = {
-            Corner = UDim.new(0, 8) -- Bo góc khớp với ảnh và UI
+            Corner = UDim.new(0, 8) 
         }
     })
 end
