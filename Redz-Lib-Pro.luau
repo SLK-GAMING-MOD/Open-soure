@@ -1120,7 +1120,7 @@ AutomaticSize=Enum.AutomaticSize.X,
 Active=true,
 Elements=aq,
 Text="",
-BackgroundTransparency = s.HasBackground and 0.65 or 0,
+BackgroundTransparency = s.HasBackground and 0.45 or 0,
 ThemeTag={
 BackgroundColor3="Colors.Stroke"
 },
