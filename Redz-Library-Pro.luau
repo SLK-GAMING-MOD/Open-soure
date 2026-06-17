@@ -1,5 +1,6 @@
 --[[
     Redz Mod Pro V6.3.27
+        Made By 72ms
 ]]
 
 do
@@ -203,7 +204,7 @@ RedzMod.GlobalLogo = "rbxassetid://139796320143086";
 RedzMod.ImageColorMapping = "rbxassetid://4155801252";
 
 if getcustomasset then
-	local link = "https://raw.githubusercontent.com/SLK-GAMING-MOD/Hutao-Team/refs/heads/main/images/hutaoteam.png";
+	local link = "https://raw.githubusercontent.com/SLK-GAMING-MOD/Open-soure/refs/heads/main/Redz-hub-scripts-logo.png";
 	local dir = 'HutaoHubAssets';
 
 	if not isfolder(dir) then
