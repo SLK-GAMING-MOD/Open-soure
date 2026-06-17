@@ -3893,12 +3893,13 @@ ah=UDim2.fromOffset(ak,al)
 end
 end
 
+-- BẮT ĐẦU TẠO MAIN GUI VÀ BACKGROUND (Đã fix lỗi duplicate)
 local windowProperties = {
     AnchorPoint = Vector2.new(0.5, 0.5),
     Position = UDim2.fromScale(0.5, 0.5),
     Active = true,
     Size = ah,
-    ClipsDescendants = true, -- Sửa lỗi: Giúp gọt gọn ảnh nền không bị tràn ra khi bạn thu gọn GUI
+    ClipsDescendants = true, 
     Elements = {
         Corner = UDim.new(0, 8)
     }
@@ -3914,10 +3915,10 @@ if not ae.Background then
         ThemeTag = { Color = "Colors.Background" }
     }
 else
-    -- Xóa sổ màu nền của GUI nhường chỗ cho Background Image
     windowProperties.BackgroundTransparency = 1
 end
 
+-- TẠO BIẾN 'ak' MỘT LẦN DUY NHẤT TẠI ĐÂY
 local ak = E("Frame", "Window", I, windowProperties)
 
 -- TẠO LỚP ẢNH VÀ LỚP PHỦ
@@ -3928,7 +3929,7 @@ if ae.Background then
         Image = ae.Background,
         ScaleType = Enum.ScaleType.Crop, 
         ZIndex = 0, 
-        ImageTransparency = 0.2, -- Chỉnh độ mờ của ảnh gốc
+        ImageTransparency = 0.2, 
         Elements = {
             Corner = UDim.new(0, 8) 
         }
@@ -3937,7 +3938,7 @@ if ae.Background then
     E("Frame", "BackgroundOverlay", ak, {
         Size = UDim2.fromScale(1, 1),
         BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-        BackgroundTransparency = 0.55, -- Chỉnh độ mờ lớp phủ đen
+        BackgroundTransparency = 0.55, 
         ZIndex = 0, 
         BorderSizePixel = 0,
         Elements = {
