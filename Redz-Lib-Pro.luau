@@ -35,10 +35,10 @@ ColorSequenceKeypoint.new(0.00,Color3.fromRGB(25,25,25)),
 ColorSequenceKeypoint.new(0.50,Color3.fromRGB(32.5,32.5,32.5)),
 ColorSequenceKeypoint.new(1.00,Color3.fromRGB(25,25,25))
 },
-Primary=Color3.fromRGB(170, 50, 50),
-OnPrimary=Color3.fromRGB(200, 100, 100),
-ScrollBar=Color3.fromRGB(170, 50, 50),
-Stroke=Color3.fromRGB(60, 20, 20),
+Primary=Color3.fromRGB(88,101,242),
+OnPrimary=Color3.fromRGB(61,67,135),
+ScrollBar=Color3.fromRGB(1,76,105),
+Stroke=Color3.fromRGB(45,45,45),
 
 Error=Color3.fromRGB(255,102,102),
 Icons=Color3.fromRGB(232,233,235),
@@ -3903,11 +3903,6 @@ local ak=E("Frame","Window",I,{
     },
 Elements={
 Corner=UDim.new(0,8),
-UIStroke={
-    Color=Color3.fromRGB(200, 60, 60), 
-    Thickness=1.5,
-    Transparency=0.4
-},
 Gradient={
 Rotation=45,
 ThemeTag={
@@ -3917,9 +3912,9 @@ Color="Colors.Background"
 }
 })
 
--- BẮT ĐẦU THÊM BACKGROUND IMAGE VÀ LỚP PHỦ GRADIENT (Code mới)
+-- BẮT ĐẦU THÊM BACKGROUND IMAGE VÀ LỚP PHỦ (Code mới)
 if ae.Background then
-    -- Lớp 1: Ảnh nền
+    -- Lớp 1: Ảnh nền (Nằm dưới cùng)
     E("ImageLabel", "BackgroundImage", ak, {
         Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1, 
@@ -3934,29 +3929,19 @@ if ae.Background then
         }
     })
 
-    -- Lớp 2: Lớp phủ đen mờ có Gradient
-    local overlay = E("Frame", "BackgroundOverlay", ak, {
+    -- Lớp 2: Lớp phủ đen mờ (Nằm đè lên ảnh, nhưng dưới các nút bấm)
+    E("Frame", "BackgroundOverlay", ak, {
         Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Color3.fromRGB(15, 5, 5),
-        BackgroundTransparency = 0.2,
-        ZIndex = 0, 
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0), -- Màu của lớp phủ (Đang để màu đen)
+        BackgroundTransparency = 0.5, -- Độ trong suốt của lớp phủ
+        ZIndex = 0, -- Cùng ZIndex = 0 nhưng load sau nên sẽ đè lên ảnh nền
         BorderSizePixel = 0,
         Elements = {
-            Corner = UDim.new(0, 8)
+            Corner = UDim.new(0, 8) -- Bo góc khớp với ảnh và UI
         }
     })
-    
-    -- Thêm Gradient cho lớp phủ (Nét từ tối sang sáng mờ)
-    E("UIGradient", "OverlayGradient", overlay, {
-        Transparency = NumberSequence.new{
-            NumberSequenceKeypoint.new(0, 0),
-            NumberSequenceKeypoint.new(0.4, 0.4),
-            NumberSequenceKeypoint.new(1, 0.8)
-        },
-        Rotation = 0
-    })
 end
--- KẾT THÚC THÊM BACKGROUND IMAGE VÀ LỚP PHỦ GRADIENT
+-- KẾT THÚC THÊM BACKGROUND IMAGE VÀ LỚP PHỦ
 
 u(ak.Destroying,function()
 self:Destroy()
