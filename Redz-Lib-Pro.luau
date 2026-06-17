@@ -1087,16 +1087,12 @@ return ap end local ap=function()
 
 
 local ap=160
-
 local aq = { Corner=UDim.new(0,6) }
-local asThemeTag = {}
 
 if s.HasBackground then
     aq.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
 else
     aq.Stroke = { ThemeTag = { Color = "Colors.Stroke" } }
-    aq.Gradient = { Rotation = 45, ThemeTag = { Color = "Colors.Background" } }
-    asThemeTag = { BackgroundTransparency="BackgroundTransparency" }
 end
 
 local ar=E("TextButton",OutBox,{
@@ -1112,7 +1108,9 @@ Position=UDim2.fromOffset(50,50),
 BackgroundTransparency = s.HasBackground and 0.65 or 0,
 Elements=aq,
 Active=true,
-ThemeTag=asThemeTag
+ThemeTag={
+    BackgroundColor3="Colors.Buttons.Default"
+}
 })
 
 local at=E("TextButton","Search",as,{
@@ -1955,18 +1953,23 @@ BackgroundTransparency=1,
 Text=""
 })
 
+local sliderElements = { Corner=UDim.new(0.5,0) }
+if s.HasBackground then
+    sliderElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+end
+
 local aK=E("Frame",aJ,{
 Size=UDim2.new(1,-20,0,6),
 Position=UDim2.fromScale(0.5,0.5),
 AnchorPoint=Vector2.new(0.5,0.5),
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
 ThemeTag={
 OBJECTS=aE,
-BackgroundColor3="Colors.Stroke"
+BackgroundColor3="Colors.Buttons.Default"
 },
-Elements={
-Corner=UDim.new(0.5,0)
-}
+Elements=sliderElements
 })
+
 
 local aL=E("Frame",aK,{
 Size=UDim2.fromScale(0,1),
@@ -2139,24 +2142,26 @@ BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,148)
 })
 
+local discordElements = { Corner=UDim.new(0,9) }
+if s.HasBackground then
+    discordElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
+else
+    discordElements.Stroke = { ThemeTag={ Color="Colors.Border.Default" } }
+end
+
 local aG=E("CanvasGroup",aF,{
 Size=UDim2.new(0,178,1,-15),
 Position=UDim2.new(0,5,1,0),
 AnchorPoint=Vector2.new(0,1),
 ClipsDescendants=true,
-Elements={
-Corner=UDim.new(0,9),
-Stroke={
-ThemeTag={
-Color="Colors.Border.Default"
-}
-}
-},
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
+Elements=discordElements,
 ThemeTag={
 OBJECTS=aD,
 BackgroundColor3="Colors.Buttons.Default"
 }
 })
+
 
 local aH=E("ImageLabel",aG,{
 BackgroundColor3=Color3.new(1,1,1),
@@ -2298,6 +2303,7 @@ Size=UDim2.new(1,0,0.28,0),
 Position=UDim2.fromScale(0,1),
 AnchorPoint=Vector2.new(0,1),
 BorderSizePixel=0,
+BackgroundTransparency = s.HasBackground and 0.65 or 0,
 ThemeTag={
 OBJECTS=aD,
 BackgroundColor3="Colors.Buttons.Default"
@@ -2438,7 +2444,7 @@ AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency = s.HasBackground and 0.65 or 0,
 ThemeTag={
 OBJECTS=aD,
-BackgroundColor3="Colors.Stroke"
+BackgroundColor3="Colors.Buttons.Default"
 },
 Elements=textBoxElements
 })
@@ -3405,13 +3411,11 @@ AutomaticSize=Enum.AutomaticSize.Y
 })
 
 local notifyElements = { Corner=UDim.new(0,9) }
-local notifyThemeTag = {}
 
 if s.HasBackground then
     notifyElements.Stroke = { Color = Color3.fromRGB(255, 255, 255), Thickness = 1, Transparency = 0.85 }
 else
-    notifyElements.Gradient = { Rotation=45, ThemeTag={ Color="Colors.Background" } }
-    notifyThemeTag = { BackgroundTransparency="BackgroundTransparency" }
+    notifyElements.Stroke = { ThemeTag = { Color = "Colors.Stroke" } }
 end
 
 local aB=E("TextButton",aA,{
@@ -3420,7 +3424,9 @@ Size=UDim2.fromScale(1,1),
 AutoButtonColor=false,
 Text="",
 BackgroundTransparency = s.HasBackground and 0.65 or 0,
-ThemeTag=notifyThemeTag,
+ThemeTag={
+    BackgroundColor3="Colors.Buttons.Default"
+},
 Elements=notifyElements
 })
 
